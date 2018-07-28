@@ -5,18 +5,18 @@ clear
 
 % data folder
   % oregon 
-    % datafol = '/data/pmb229/isce/p222f870/data/'; 
-    % baselinefol = [datafol 'baselines/']; 
-  % sumatra
-    datafol = '/data/pmb229/isce/p446f7190_sumatra/data/'; 
+    datafol = '/data/pmb229/isce/p222f870/data/'; 
     baselinefol = [datafol 'baselines/']; 
+  % sumatra
+%     datafol = '/data/pmb229/isce/p446f7190_sumatra/data/'; 
+%     baselinefol = [datafol 'baselines/']; 
 
     cd(baselinefol)
     warning off
 
 % SET TEMPORAL AND SPATIAL BASELINES
-    bl_lim = 5e6; 
-    dt_lim = 5e2; % 2 years: 730 
+    bl_lim = 2000; 
+    dt_lim = 190; % 2 years: 730 
 
     % this is only done to find the baseline infomation, has no affect on which date combos you make
     sz = dir('int_*'); 

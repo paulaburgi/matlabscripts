@@ -8,10 +8,11 @@
 
  
 % cd to current int dir that you want to process in 
-%cd('/data/pmb229/isce/p222f870/mostcombos/'); 
+cd('/data/pmb229/isce/p222f870/mostcombos/'); 
 %cd('/data/pmb229/isce/p222f870/HVcombos/'); 
 %cd('/data/pmb229/isce/p446f7190_sumatra/ints_SRTM'); 
-    cd('/data/pmb229/isce/p222f870/ALOS2_data/iscecombos/'); 
+    %cd('/data/pmb229/isce/p222f870/ALOS2_data/iscecombos/'); 
+    %cd('/data/pmb229/isce/p222f870/NED_ints/'); 
 clear
 
 
@@ -32,10 +33,10 @@ steps = {'startup'; 'preprocess'; 'verifyDEM'; 'pulsetiming'; 'estimateHeights';
          'settopoint1'; 'topo'; 'shadecpx2rg'; 'rgoffset'; 'rg_outliers2'; ...
          'resamp_only'; 'settopoint2'; 'correct'; 'coherence'; 'filter'; 'mask'; ...
          'unwrap'; 'unwrap2stage'; 'geocode'; 'endup'};  
-intdirs = dir; 
+intdirs = dir('int_*'); 
 intdirs = {intdirs.name}; 
 endidx = find(strcmp(steps, endend(7:end)));
-nints = length(intdirs)-2; 
+nints = length(intdirs); 
 nintsdone = 1; 
 [~,nints_done] = system('ls */topophase.cor.geo | wc -l'); 
 if isnan(str2double(nints_done)); 
@@ -45,8 +46,7 @@ else
 end
 
 
-for i=3:nints+2 % to start from first int file, set to 3:nints+2
-    % find number of polarization folders in int dir
+for i=1:nints 
     intdir = cell2mat(intdirs(i)); 
     cd(intdir)
     

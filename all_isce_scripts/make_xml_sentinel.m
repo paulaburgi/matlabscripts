@@ -8,7 +8,7 @@ clear all
 clc
 warning off
 
-DEM='stitched_i2.dem';
+%DEM='stitched_i2.dem';
 unwrap='grass'; %unwrap='snaphu_mcf'; %icu/snaphu_mcf
 filter='0.4';
 bounding_box='37.4, 37.6, -121.81, -121.56';
