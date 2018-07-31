@@ -1,8 +1,7 @@
 % OregonLidar2isceDEM.m
 
 cdir = pwd; 
-dldir = [pwd '/downlooked2/'];
-
+dldir = [pwd '/fullres/'];
 
 % unzip any zipped lidar folders
 zdir = dir('LDQ*zip'); 
@@ -16,11 +15,11 @@ if ~isempty(zdir)
     end
 end
 
-Ldir = dir('LDQ*');
+Ldir = dir('L*');
 Ldir = {Ldir.name};
 
 Ll = length(Ldir); 
-
+tst = [];
 for i = 1:Ll 
     Ldiri = cell2mat(Ldir(i)); 
     indir = ['be' Ldiri(5:9) lower(Ldiri(10)) Ldiri(11)]; 
@@ -40,17 +39,15 @@ for i = 1:Ll
                 cd(indir);
                 tfile = 'w001001.adf';
             end
-            if ~exist('outwgs84.dem', 'file'); 
-                system(['gdal_translate -ot Int16 -of ENVI -a_nodata -32768 ' tfile ' out.dem']); 
-                system(['gdalbuildvrt -srcnodata -32768 out.dem.vrt out.dem']); 
-                system(['gdalwarp -t_srs EPSG:4326 -of ENVI -r bilinear out.dem.vrt outwgs84.dem']); 
-                system(['gdalbuildvrt outwgs84.dem.vrt outwgs84.dem']); 
-                gdalbuildvrt2iscexml('outwgs84.dem.vrt');
+            if exist('out.dem', 'file'); 
+                gdalbuildvrt2iscexml('out.dem.vrt');
             end
             foldnm  = strrep(sdt, ' ', '_'); 
             demfile = [indir '_' foldnm '.dem'];
             if ~exist([dldir demfile], 'file'); 
-                system(['looks.py -i outwgs84.dem -o ' demfile ' -r 10 -a 10']);
+                system(['cp out.dem ' demfile]);
+                system(['cp out.dem.vrt ' demfile '.vrt']);
+                system(['cp out.dem.xml ' demfile '.xml']);
                 system(['mv be* ' dldir]); 
             end
         end 
@@ -65,18 +62,16 @@ for i = 1:Ll
             for k = 1:abdirl
                 indira = cell2mat(abdir(k)); 
                 cd(indira); 
-                if ~exist('outwgs84.dem', 'file'); 
-                    system(['gdal_translate -ot Int16 -of ENVI -a_nodata -32768 ' tfile ' out.dem']); 
-                    system(['gdalbuildvrt -srcnodata -32768 out.dem.vrt out.dem']); 
-                    system(['gdalwarp -t_srs EPSG:4326 -of ENVI -r bilinear out.dem.vrt outwgs84.dem']); 
-                    system(['gdalbuildvrt outwgs84.dem.vrt outwgs84.dem']); 
-                    gdalbuildvrt2iscexml('outwgs84.dem.vrt');
+                if exist('out.dem', 'file'); 
+                    gdalbuildvrt2iscexml('out.dem.vrt');
                 end
                 foldnm  = strrep(sdt, ' ', '_'); 
                 demfile = [indir '_' foldnm '_' num2str(k) '.dem'];
                 if ~exist([dldir demfile], 'file'); 
-                    system(['looks.py -i outwgs84.dem -o ' demfile ' -r 10 -a 10']);
-                    system(['mv be* ' dldir]); 
+                    system(['cp out.dem ' demfile]);
+                    system(['cp out.dem.vrt ' demfile '.vrt']);
+                    system(['cp out.dem.xml ' demfile '.xml']);
+                    system(['mv be* ' dldir]);
                 end
                 cd ..
             end
@@ -123,18 +118,6 @@ end
 %     fclose(fid);
 %     system('cp all_stitched.dem.vrt all_stitched_masked.dem.vrt'); 
 %     system('cp all_stitched.dem.xml all_stitched_masked.dem.xml'); 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     
