@@ -1,0 +1,41 @@
+% prep_any_gee_import
+
+clear 
+close all
+
+f = 'demdiff2.geo'; 
+
+% write a tif file, to get ref frame 
+%     system(['gdal_translate ' f '.vrt ' f '.tif']); 
+    info = geotiffinfo([f '.tif']); 
+    fg = geotiffread([f '.tif']); 
+    
+
+% identify no data areas 
+    ndval     = -9999;
+    if contains(f, 'demdiff'); 
+        midx1     = find(fg == 0); 
+        fg(midx1) = ndval; 
+        fg = fg+24; 
+        midx      = find(fg > 200 | fg < -200); 
+    else
+        midx      = -9988; 
+    end
+    fg(midx)  = ndval;
+    
+    % write tif file 
+    tifname = ['gee_' f '.tif']; 
+    geotiffwrite(tifname, flipud(fg), info.RefMatrix);
+    
+    
+
+
+
+
+
+
+
+
+
+
+
