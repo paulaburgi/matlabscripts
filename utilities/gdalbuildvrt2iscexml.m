@@ -4,7 +4,7 @@ function gdalbuildvrt2iscexml(gdalvrtfile)
 % Must be in folder containing gdal vrt file to translate
 % gdalvrtfile e.g.: gdalvrtfile='outwgs84.dem.vrt'; 
 
-gdalvrtfile = 'outwgs84.dem.vrt'; 
+% gdalvrtfile = 'outwgs84.dem.vrt'; 
 
 [~, sztxt] = system(['more ' gdalvrtfile ' | grep raster']); 
     qidx   = strfind(sztxt, '"'); 
