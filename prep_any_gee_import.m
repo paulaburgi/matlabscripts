@@ -3,11 +3,12 @@
 clear 
 close all
 
-f = 'demdiff3.geo'; 
+%f = 'demdiff3.geo'; 
 %f = 'all_stitched.dem'; 
 %f = 'all_stitched_masked.dem'; 
 %f = 'demLat_N43_N45_Lon_W125_W121.dem.wgs84'; 
 %f = 'z.rdr.geo'; 
+f = 'stitchedDEM.dem'; 
 
 % write a tif file, to get ref frame 
     if ~exist([f '.tif'], 'file'); 
@@ -30,12 +31,14 @@ f = 'demdiff3.geo';
         midx      = find(fg == -9988); 
     elseif contains(f, 'demLat_') || contains(f, 'z.rdr')
         midx      = find(fg < 0); 
+    elseif contains(f, 'stitchedDEM')
+        midx      = find(fg == -32767); 
     end
     fg(midx)  = ndval;
     
     % write tif file 
     fh      = strrep(f, '.', '_'); 
-    tifname = ['for_gee2/gee_' fh '.tif']; 
+    tifname = ['for_gee/gee_' fh '.tif']; 
     geotiffwrite(tifname, fg, info.RefMatrix);
     
     

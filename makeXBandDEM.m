@@ -12,6 +12,7 @@ for i=1:length(dtdir);
 end
 
 
-system(['gdalbuildvrt stitchedDEM.vrt *vrt']); 
-system(['gdal_translate -of ENVI stitchedDEM.vrt stitched.dem']); 
+system(['gdalbuildvrt stitchedDEM.dem.vrt W*vrt']); 
+system(['gdal_translate -of ENVI stitchedDEM.dem.vrt stitchedDEM.dem']); 
 
+gdalbuildvrt2iscexml('stitchedDEM.dem.vrt');
