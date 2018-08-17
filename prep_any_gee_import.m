@@ -3,8 +3,8 @@
 clear 
 close all
 
-f = 'demdiff3.geo'; 
-%f = 'all_stitched.dem'; 
+%f = 'demdiff3.geo'; 
+f = 'all_stitched.dem'; 
 %f = 'all_stitched_masked.dem'; 
 %f = 'demLat_N43_N45_Lon_W125_W121.dem.wgs84'; 
 %f = 'z.rdr.geo'; 
@@ -35,7 +35,7 @@ f = 'demdiff3.geo';
     
     % write tif file 
     fh      = strrep(f, '.', '_'); 
-    tifname = ['for_gee2/gee_' fh '.tif']; 
+    tifname = ['for_gee/gee_' fh '.tif']; 
     geotiffwrite(tifname, fg, info.RefMatrix);
     
     
