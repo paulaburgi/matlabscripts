@@ -7,7 +7,7 @@ ccdir = '/data/pmb229/other/clearcuttingTStest/';
 
 % load baseline data & int data
 
-dset = 'D1'; % D1=OR ALOS, D2=Fran's RS2, D3=SF Sentinel 
+dset = 'D2'; % D1=OR ALOS, D2=Fran's RS2, D3=SF Sentinel 
 
 if strcmp(dset, 'D1')
     load([ccdir 'baselines.mat']); 
@@ -38,8 +38,8 @@ dn_all = baselines2.dn_all;
     end
     
 % % select which ints to work with
-    bl     = bl(gidx,:); 
-    dc     = dc(gidx,:); 
+%     bl     = bl(gidx,:); 
+%     dc     = dc(gidx,:); 
     dcv    = dc(:);
     du     = sort(unique(dcv));
 
@@ -132,19 +132,21 @@ r_all   = [];
 
 % Plot
 % x label info
-    dall   = du(1)-100:du(end)+150; 
+    dall   = du(1)-200:du(end)+350; 
     [dvec] = datevec(dall); 
     idx1   = find(dvec(:,2) == 1 & dvec(:,3) == 1); 
-    idx7   = find(dvec(:,2) == 7 & dvec(:,3) == 1); 
-    xt     = sort([dall(idx1) dall(idx7)]); 
+    %idx7   = find(dvec(:,2) == 7 & dvec(:,3) == 1); 
+    xt     = sort([dall(idx1)]);% dall(idx7)]); 
 
-set(gcf, 'Position', [300, 300, 900, 500])  
+set(gcf, 'Position', [300, 300, 1000, 400])  
 set(gcf, 'PaperOrientation', 'landscape');
+fs = 12; 
 
 % plot baseline info
-    pos1 = [0.08 0.18 0.25 0.75];
+    pos1 = [0.08 0.29 0.25 0.60];
     subplot('Position',pos1)
     hold on; box on; grid on;
+    set(gca, 'fontsize', fs); 
     plot(du, bl_all, 'k.', 'markersize', 15); 
     for i=1:length(ints)
         bl1i = find(dn_all == dc(i,1)); 
@@ -163,11 +165,12 @@ set(gcf, 'PaperOrientation', 'landscape');
     axis([xt(1)-50 xt(end)-60 min(bl_all)-(dyl/2) max(bl_all)+(dyl/2)])
     
 % plot time series for no-noise models 
-    pos1 = [0.4 0.381 0.25 0.55];
+    pos1 = [0.4 0.494 0.25 0.38];
     subplot('Position',pos1)
-    hold on; box on; grid on
+    hold on; box on; grid on;
+    set(gca, 'fontsize', fs); 
     cj = parula(length(r_all)); 
-    plot([du(1)-100 du(end)+100], ones(2,1).*avgvel./d2y, 'k-', 'linewidth', 1);
+    plot([du(1)-1000 du(end)+1000], ones(2,1).*avgvel./d2y, 'k-', 'linewidth', 1);
     for i=1:length(r_all)
         plot(du(i), r_all(i), '.', 'markersize', 20, ...
             'color', cj(i,:)); 
@@ -175,13 +178,13 @@ set(gcf, 'PaperOrientation', 'landscape');
     end
     yadd = (max(r_all)-min(r_all)).*0.1; 
     axis([xt(1)-50 xt(end)-60 min(r_all)-yadd max(r_all)+yadd]); 
-    ylabel('Avg Vel (m/yr)');
-    title('TS & RMS error');
+    ylabel('Avg Vel');
+    title('Time Series & RMS error');
     set(gca,'xtick',xt); 
     set(gca,'xticklabel',{[]}) 
     xl = get(gca, 'xlim'); 
  % plot RMS error   
-    pos1 = [0.4 0.18 0.25 0.2];
+    pos1 = [0.4 0.29 0.25 0.2];
     subplot('Position',pos1)
     ts1   = def(2:end); 
     ts1r  = repmat(ts1, 1, size(ts_all,2));
@@ -189,20 +192,21 @@ set(gcf, 'PaperOrientation', 'landscape');
     rmsts = sqrt(dts./length(du)); 
     plot(du, rmsts./max(rmsts), '^-', 'markersize', 4, 'color', [.7 0 0], ...
         'MarkerFaceColor',[.7 0 0]); 
-    ylabel('Norm. RMS error') %, 'color', [0.7 0 0]);
+    ylabel('Norm. error') %, 'color', [0.7 0 0]);
     set(gca,'xtick',xt); 
     set(gca,'XTickLabelRotation',45);
     datetick('x','mm-yyyy', 'keepticks');
     xlabel('Date'); 
     grid on; 
     axis([xl 0 1.2]); 
-
+    set(gca, 'fontsize', fs); 
     
 %plot DEM error estimations
-    pos1 = [0.72 0.18 0.25 0.75];
+    pos1 = [0.72 0.29 0.25 0.60];
     subplot('Position',pos1)
     hold on; box on; grid on
-    plot(du, ones(length(du),1).*dz, '--', 'linewidth', 2, ... 
+    set(gca, 'fontsize', fs); 
+    plot([du(1)-1000 du(end)+1000], ones(2,1).*dz, '--', 'linewidth', 2, ... 
         'color', [0.7 0.7 0.7]); 
     plot(du, (mbl), '-k', 'linewidth', 2); 
     scatter(du, mbl, 30, 1:length(du), 'filled', ...
@@ -214,7 +218,7 @@ set(gcf, 'PaperOrientation', 'landscape');
     xlabel('Date of clear cutting'); 
     ylabel('Estimated DEM error (m)'); 
     title('Temporally Variable DEM Error'); 
-    axis([xt(1)-50 xt(end)-60 min(min(mbl))-1 dz+5])
+    axis([xt(1)-50 xt(end)-60 min(min(mbl))-1 dz+4])
     
     
     

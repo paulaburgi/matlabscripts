@@ -22,8 +22,9 @@ elseif strcmp(dset, 'D3')
     load([ccdir 'cctest_sentinel_dc.mat']); meancor_bl_dates=dc; 
     l=0.055; sr=6.9e5; lo =43; 
 end
-dn_all = baselines2.dn_all; 
-    bl_all = baselines2.bl_all; 
+    dn_all = baselines2.dn_all; 
+    bl_all = baselines2.bl_all;  
+    bl_all2 = (rand(length(dn_all),1)-0.5).*2e3; 
     d      = meancor_bl_dates; 
     gidx   = d.good_cor_idx; 
     dc     = d.dateCombos; 
