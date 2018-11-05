@@ -33,18 +33,34 @@ clear
     
 %% Define Areas
     % clear cut
-        a  = 1; 
-        x1 = 290; x2 = 310;
-        y1 = 280; y2 = 290;
+%        a  = 1; 
+%         x1 = 290; x2 = 310;
+%         y1 = 280; y2 = 290;
 %         a  = 2; 
 %         x1 = 235; x2 = 255; 
 %         y1 = 205; y2 = 215; 
+%         a = 3; 
+%         x1 = 1728; x2 = 1740; 
+%         y1 = 1029; y2 = 1039; 
+%           a =4 ; % tree growth test? 
+%           x1 = 2353; x2 = 2368; 
+%           y1 = 1092; y2 = 1104; 
+        a = 5; 
+        x1 = 781*2; x2 = 790*2; 
+        y1 = 610*2; y2 = 620*2; 
+
     % forested
-        xx1 = 290; xx2 = 310;
-        yy1 = 300; yy2 = 310;
+%         xx1 = 290; xx2 = 310;
+%         yy1 = 300; yy2 = 310;
 %         xx1 = 270; xx2 = 290; 
 %         yy1 = 220; yy2 = 230; 
-
+%         xx1 = 1751; xx2 = 1763; 
+%         yy1 = 1027; yy2 = 1038; 
+%         xx1 = 2407; xx2 = 2418; 
+%         yy1 = 1101; yy2 = 1116; 
+        xx1 = 781*2; xx2 = 790*2; 
+        yy1 = 630*2; yy2 = 638*2; 
+        
 % sumatra 
     % clear cut
        % a=1; 
@@ -77,9 +93,10 @@ clear
     pdiff3=[];
     pdiff4=[]; 
     mdiff=[];
+    avgdate=[];
     
     blidx=find(bl > 200 & bl < 600)'; 
-    figure; 
+    %figure; 
 %         figure; hold on; 
     for i =  1:nints %:nints %round(linspace(1,nints, 16)) %1:nints
         d1 = datestr(dates(i,1), 'yymmdd'); 
@@ -111,15 +128,16 @@ clear
         p2 = phsbox2(:); 
             % % figure
             %subplot(3,3,plotnum); 
-            plotnum=plotnum+1; 
-            %close
+%             plotnum=plotnum+1; 
+%             close
 %              figure; hold on; %figure('units', 'normalized', 'outerposition', [0 0 1 1]); 
 %              pcolor(phs); shading flat; hold on; linkaxes;
 %              plot([x1 x1 x2 x2 x1], [y1 y2 y2 y1 y1], 'k-', 'linewidth', 2); 
 %              plot([xx1 xx1 xx2 xx2 xx1], [yy1 yy2 yy2 yy1 yy1], 'k-', 'linewidth', 2); 
 %             title([d1 '\_' d2 '    B_p=' num2str(round(bl(i))) '    area ' num2str(a)]); 
-              %h=colorbar;
+%               h=colorbar;
 %               ylabel(h, 'phase'); 
+%              axis([x1-100 x2+100 y1-100 y2+100]); 
             %print(gcf, [datafol 'analysis/test' num2str(plotnum-1) '.jpg'], '-djpeg');
             
         % Circular mean
@@ -173,7 +191,9 @@ clear
         
         % other
         bls = [bls; bl(i)]; 
-        datediff = [datediff; abs(dates(i,1)-dates(i,2))];        
+        datediff = [datediff; abs(dates(i,1)-dates(i,2))];  
+        avgdate = [avgdate; (dates(i,1)+dates(i,2))/2];
+        
       
     end
         
@@ -184,6 +204,8 @@ clear
     cerror  = cerror(idx, :); 
     ferror  = ferror(idx, :); 
     
+    %nidx = find(pdiff <-1); 
+    %pdiff(nidx) = pdiff(nidx)+2*pi; 
     
     
     
@@ -192,6 +214,11 @@ clear
 % plot rms error
     figure; hold on; 
     errorbar(bls, pdiff, error1, '.k', 'markersize', 20); 
+    scatter(bls, pdiff, 20, avgdate, 'filled'); 
+    %plot(bls(1:23), pdiff(1:23), '.r', 'markersize', 20); 
+    %plot(bls(23:end), pdiff(23:end), '.g', 'markersize', 20); 
+    colorbar; 
+    colormap jet; 
     
     ylim([-4 4]); 
     xlabel('Perp Baseline (m)'); 
@@ -201,7 +228,7 @@ clear
     xl = xlim; 
     f1 = gcf; 
         
-    
+    close
     
 % plot error individually
     figure; hold on; 

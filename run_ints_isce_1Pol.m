@@ -15,13 +15,14 @@ cd('/data/pmb229/isce/p222f870/mostcombos/');
     %cd('/data/pmb229/isce/p222f870/NED_ints/'); 
 clear
 
+datafol = '/data/pmb229/isce/p222f870/data/';
 
 
 % parameters 
     isceapp = 'insarApp.py'; % Alos=insarApp.py, sentinel=topsApp.py 
-    endend = '--end=endup';
-    %restart = '--start=geocode';
-    % dostep = '--dostep=filter'; 
+     endend = '--end=geocode';
+%     restart = '--start=geocode';
+    dostep = '--dostep=geocode'; 
     
     
     
@@ -35,6 +36,9 @@ steps = {'startup'; 'preprocess'; 'verifyDEM'; 'pulsetiming'; 'estimateHeights';
          'unwrap'; 'unwrap2stage'; 'geocode'; 'endup'};  
 intdirs = dir('int_*'); 
 intdirs = {intdirs.name}; 
+    load([datafol 'analysis/meancor_bl_dates_area2_HH.mat']); 
+    gidx    = meancor_bl_dates.good_cor_idx; 
+    intdirs  = intdirs(gidx); 
 endidx = find(strcmp(steps, endend(7:end)));
 nints = length(intdirs); 
 nintsdone = 1; 

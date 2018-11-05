@@ -22,7 +22,7 @@ intdirs = {intdirs.name};
 load([datafol 'analysis/meancor_bl_dates_area2_' pol '.mat']); 
 dc      = meancor_bl_dates.dateCombos; 
 gidx    = meancor_bl_dates.good_cor_idx; 
-indirs  = intdirs(gidx); 
+intdirs  = intdirs(gidx); 
 dc      = dc(gidx,:); 
 bls     = meancor_bl_dates.bl(gidx); 
 
@@ -41,6 +41,9 @@ cd(cell2mat(intdirs(1)));
     info = geotiffinfo('temptif.tif'); 
 cd ..
     
+geefold = '/data/pmb229/isce/p222f870/data/analysis/geotiff_mag_gee/'; 
+fid = fopen([geefold 'meta_mag_all.csv'], 'wt'); 
+fprintf(fid, 'id_no,idx,date1,date2,datenum1,datenum2,baseline\n'); 
 
 %% separate phs and mag for all ints, write only phs info into geotif
 ix=-1; 
@@ -72,22 +75,21 @@ for i=1:length(intdirs);
     % find no data pixels, set = -9999
     ndval    = -9999; 
     midx      = find(mag == 0 & phs == 0);
-    phs(midx) = ndval;
+    mag(midx) = ndval;
     
-    % write tif file 
-    tifname = ['gee_' intdir(5:end) '_filt_topophase_flat_geo.tif']; 
-    geotiffwrite(tifname, flipud(phs), info.RefMatrix);
+    % write tif file
+    tifname = ['gee_mag' intdir(5:end) '_filt_topophase_flat_geo.tif']; 
+    geotiffwrite([geefold tifname], flipud(mag), info.RefMatrix);
     
     % write csv file 
-    fid = fopen(['meta_' filename '.csv'], 'wt'); 
-    fprintf(fid, 'id_no,idx,date1,date2,datenum1,datenum2,baseline\n'); 
+    fid = fopen([geefold 'meta_mag_all.csv'], 'a'); 
     fprintf(fid, [tifname(1:end-4) ',']); 
     fprintf(fid, [num2str(ix) ',']); 
     fprintf(fid, ['d' d1 ',']); 
     fprintf(fid, ['d' d2 ',']); 
     fprintf(fid, [num2str(dn(1)) ',']); 
     fprintf(fid, [num2str(dn(2)) ',']); 
-    fprintf(fid, num2str(round(bl))); 
+    fprintf(fid, [num2str(round(bl)) '\n']); 
     fclose(fid); 
     
     cd ..

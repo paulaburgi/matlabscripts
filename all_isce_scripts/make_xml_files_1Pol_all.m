@@ -13,14 +13,14 @@ close all
 
 % data folder
   % oregon 
-    %pffol       = '/data/pmb229/isce/p222f870/'; 
+    pffol       = '/data/pmb229/isce/p222f870/'; 
         %pffol   = '/data/pmb229/isce/p222f870/ALOS2_ints/';
-        pffol    = '/data/pmb229/isce/p222f870/Aster_ints/'; 
+        %pffol    = '/data/pmb229/isce/p222f870/Aster_ints/'; 
     datafol     = [pffol 'data/']; 
-    %intfol      = [pffol 'mostcombos/']; 
+    intfol      = [pffol 'mostcombos/']; 
     %intfol      = [pffol 'HVcombos/']; 
         %intfol   = [pffol 'iscecombos'];
-        intfol   = [pffol];
+       % intfol   = [pffol];
   % sumatra
 %     pffol = '/data/pmb229/isce/p446f7190_sumatra/'; 
 %     datafol     = [pffol 'data/']; 
@@ -31,9 +31,9 @@ close all
     
 % parameters
     filter_strength = 0.3;  % 0.0 - 1.0
-    unwrap = 'False'; % 'True' or 'False'
-     geocodebox = '[43.77 43.91 -123.44 -123.30]'; % p222f870, orgeon 
-     %geocodebox = '[43.58 44.38 -123.76 -122.96]'; % p222f870, orgeon
+    unwrap = 'True'; % 'True' or 'False'
+     %geocodebox = '[43.77 43.91 -123.44 -123.30]'; % p222f870, orgeon 
+     geocodebox = '[43.58 44.38 -123.76 -122.96]'; % p222f870, orgeon
      %geocodebox = '[0.44 0.63 100.37 100.79]'; % p446 f 7190, sumatra
      
  % dates
@@ -41,9 +41,10 @@ close all
     dd      = {datadir.name};
     digidx  = regexp(dd, '\d');
     is6     = cellfun(@length, digidx); 
-    slcidx  = find(is6 == 6); 
+    slcidx  = find(is6 == 8); 
     dd      = dd(slcidx); 
     dd      = cell2mat(dd'); 
+    dd      = dd(:, 3:end); 
     dn      = datenum(dd, 'yymmdd'); 
     dcn     = combnk(dn, 2); 
     ds1     = datestr(dcn(:,1), 'yymmdd'); 
@@ -65,8 +66,8 @@ close all
         cd(intfol)
 
         % find out if slc are FBD or FBS 
-        datafol_s1 = sprintf('%s/%s', datafol, s1); 
-        datafol_s2 = sprintf('%s/%s', datafol, s2); 
+        datafol_s1 = sprintf('%s20%s', datafol, s1); 
+        datafol_s2 = sprintf('%s20%s', datafol, s2); 
         s11 = dir(datafol_s1); 
         s21 = dir(datafol_s2); 
         s12 = {s11.name}; 
@@ -111,10 +112,10 @@ close all
 
 
         %link data files
-        system(sprintf('ln -sf %s/%s/%s %s', datafol, s1, IMG1, IMG1)); 
-        system(sprintf('ln -sf %s/%s/%s %s', datafol, s2, IMG2, IMG2)); 
-        system(sprintf('ln -sf %s/%s/%s %s', datafol, s1, LED1, LED1)); 
-        system(sprintf('ln -sf %s/%s/%s %s', datafol, s2, LED2, LED2));
+        system(sprintf('ln -sf %s20%s/%s %s', datafol, s1, IMG1, IMG1)); 
+        system(sprintf('ln -sf %s20%s/%s %s', datafol, s2, IMG2, IMG2)); 
+        system(sprintf('ln -sf %s20%s/%s %s', datafol, s1, LED1, LED1)); 
+        system(sprintf('ln -sf %s20%s/%s %s', datafol, s2, LED2, LED2));
 
         % write file 
         fid=fopen(sprintf('%s.xml', intfol), 'wt'); 
@@ -160,10 +161,12 @@ close all
         fprintf(fid, sprintf('       <value>%s</value>\n', unwrap)); 
         fprintf(fid, '	</property>\n'); 
         fprintf(fid, '	<property name="unwrapper name">\n'); 
-        fprintf(fid, '       <value>grass</value>\n'); 
+        fprintf(fid, '       <value>snaphu</value>\n'); 
         fprintf(fid, '	</property>\n'); 
         fprintf(fid, '	<property name="geocode list">\n'); 
-        fprintf(fid, '       <value>["filt_topophase.flat", "los.rdr", "topophase.cor", "topophase.flat", "phsig.cor"]</value>\n'); 
+        %fprintf(fid, '       <value>["filt_topophase.flat", "los.rdr", "topophase.cor", "topophase.flat", "phsig.cor"]</value>\n'); 
+        %fprintf(fid, '       <value>["topophase.cor", "phsig.cor"]</value>\n'); 
+        fprintf(fid, '       <value>["master_dl.slc", "slave_dl.slc"]</value>\n'); 
         fprintf(fid, '	</property>\n'); 
             if exist('geocodebox', 'var')
         fprintf(fid, '  <property name="geocode bounding box">\n'); 
