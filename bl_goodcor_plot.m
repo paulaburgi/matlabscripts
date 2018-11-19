@@ -26,28 +26,42 @@ dcu=unique(dci);
 
 figure; hold on; box on; 
 set(gcf, 'Position', [300, 300, 900, 400]) 
-plot(dn, bl, 'k.', 'markersize', 15); 
+plot(dn, bl./1000, 'k.', 'markersize', 15); 
 
 for i=1:length(gidx)
     bl1i = find(dn == dcg(i,1)); 
     bl2i = find(dn == dcg(i,2)); 
     bl1  = bl(bl1i); 
     bl2  = bl(bl2i); 
-    plot(dcg(i,:), [bl1 bl2], 'k'); 
+    plot(dcg(i,:), [bl1 bl2]./1000, 'k'); 
 end
 
-exints = [733236 733604; 733558 733604; 733374 733604; 733742 733972; ...
-          733788 733972; 733282 733604; 733328 733604];
-gints  = [733788 733972];
+exints = [];
+% exints = [733236 733604; 733558 733604; 733374 733604; 733742 733972; ...
+%           733788 733972; 733282 733604; 733328 733604];
+% gints  = [733788 733972];
 for i=1:length(exints)
     bl1i = find(dn == exints(i,1)); 
     bl2i = find(dn == exints(i,2)); 
     bl1  = bl(bl1i); 
     bl2  = bl(bl2i); 
-    plot(exints(i,:), [bl1 bl2], 'r'); 
+    plot(exints(i,:), [bl1 bl2]./1000, 'r'); 
 end
 
-xlab = datestr(dn, 'mm-dd-yyyy'); 
-set(gca,'xtick',dn); 
+fs = 12; 
+xlab = datestr(dn, 'mm/yyyy'); 
+xlab = ['2007'; '2008'; '2009'; '2010'; '2011']; 
+dn = datenum(xlab, 'yyyy'); 
+set(gca,'xtick',dn, 'fontsize', fs); 
 set(gca,'xticklabel',xlab);
-set(gca,'XTickLabelRotation',45);
+%set(gca,'XTickLabelRotation',45);
+xlabel('Date', 'fontsize', fs); 
+ylabel('Baseline (km)', 'fontsize', fs); 
+ylim([4.1 3.1]); 
+set(gca, 'fontsize', fs); 
+
+
+
+
+
+

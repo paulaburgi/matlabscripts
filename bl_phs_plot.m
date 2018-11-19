@@ -254,7 +254,7 @@ clear
     ylim([-4 4]); 
     xlabel('Perp Baseline (m)'); 
     ylabel('Phase Difference (radians)'); 
-    title(['\Theta_{diff} Between Forested and Cleared Areas (' pol ')']); 
+    %title(['\Theta_{diff} Between Forested and Cleared Areas (' pol ')']); 
     box on
     f2 = gcf; 
     
