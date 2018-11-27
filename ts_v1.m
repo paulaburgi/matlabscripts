@@ -33,21 +33,29 @@ v = 'v2';
 % x2 = 1365; 
 % v  = 'v1'; 
 % region cut in 2006 with little errors
-x1 = 1600; 
-x2 = 2000; 
-y1 = 700;
-y2 = 900;
-zs = [78 82 148 162];
-zs = [105 109 181 186];
+% x1 = 1600; 
+% x2 = 2000; 
+% y1 = 700;
+% y2 = 900;
+% zs = [78 82 148 162];
+% zs = [105 109 181 186];
 % region cut during ts
-x1 = 1300; 
-x2 = 1600; 
-y1 = 700;
-y2 = 900; 
-zs = [118 121 133 143]; % yyxx
+% x1 = 1300; 
+% x2 = 1600; 
+% y1 = 700;
+% y2 = 900; 
+% zs = [118 121 133 143]; % yyxx
 % zs = [108 108 143 143]; % 1 pixel in cleared region
 % zs = [127 127 181 181]; % 1 pixel in stable region
-v = 'invproj_v1'; 
+% v = 'invproj_v1'; 
+%region with landslide at some point
+x1 = 1400; 
+x2 = 1700; 
+y1 = 500; 
+y2 = 650; 
+%zs = [69 73 205 215];
+zs = [94 98 209 214];
+v = 'invproj_v2_ls'; 
 
 % size
 npy = (y2-y1)+1; 
