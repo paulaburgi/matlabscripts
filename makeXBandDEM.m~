@@ -1,8 +1,0 @@
-dtdir = dir('*dt2'); 
-dtdir = {dtdir.name}; 
-
-
-for i=1:length(dtdir); 
-    dti = cell2mat(dtdir(i)); 
-system(['gdal_translate -of ENVI ' W1214500N411500_SRTM_1_DEM.dt2 out.dem']); 
-gdalbuildvrt out.dem.vrt out.dem
