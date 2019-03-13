@@ -4,7 +4,7 @@ clear
 
 cd('/data/pmb229/isce/p222f870/mostcombos/'); 
 
-intdirs = dir; 
+intdirs = dir('int_*'); 
 intdirs = {intdirs.name}; 
 
 meancor_all=[];
@@ -13,12 +13,12 @@ ds1 = [];
 ds2 = []; 
 
 % get mean correlation in area of interest 
-for i=3:length(intdirs)
+for i=1:length(intdirs)
     intdir = cell2mat(intdirs(i)); 
     cd(intdir); 
     %cd('HHHH'); 
 
-   if ~exist('/data/pmb229/isce/p222f870/data/analysis/meancor_all_area2.mat'); 
+   if ~exist('/data/pmb229/isce/p222f870/data/analysis/meancor_bl_dates_area2_HH.mat'); 
 
     % find size of cor file 
     x=importdata('topophase.cor.vrt');
@@ -62,7 +62,7 @@ end
 %     save('/data/pmb229/isce/p222f870/data/analysis/meancor_all.mat', 'meancor_all'); 
 % end
 
-load('/data/pmb229/isce/p222f870/data/analysis/meancor_all_area2.mat'); 
+% load('/data/pmb229/isce/p222f870/data/analysis/meancor_all_area2.mat'); 
 
 
 load('/data/pmb229/isce/p222f870/data/baselines/baselines2.mat'); 

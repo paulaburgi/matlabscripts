@@ -5,18 +5,18 @@ clear
 
 % data folder
   % oregon 
-    datafol = '/data/pmb229/isce/p222f870/data/'; 
-    baselinefol = [datafol 'baselines/']; 
-  % sumatra
-%     datafol = '/data/pmb229/isce/p446f7190_sumatra/data/'; 
+%     datafol = '/data/pmb229/isce/p222f870/data/'; 
 %     baselinefol = [datafol 'baselines/']; 
+  % sumatra
+    datafol = '/data/pmb229/isce/p446f7190_sumatra/data/'; 
+    baselinefol = [datafol 'baselines/']; 
 
     cd(baselinefol)
     warning off
 
 % SET TEMPORAL AND SPATIAL BASELINES
-    bl_lim = 2000; 
-    dt_lim = 190; % 2 years: 730 
+    bl_lim = 800; 
+    dt_lim = 100; % 2 years: 730 
 
     % this is only done to find the baseline infomation, has no affect on which date combos you make
     sz = dir('int_*'); 
@@ -114,7 +114,7 @@ clear
     ax.YGrid = 'on';
     ax.GridLineStyle = '-';
     legend(sprintf('Temporal Baseline: %g days \nSpatial Baseline:     %g m ', dt_lim, bl_lim), 'location', 'southeast');
-    ds = struct('ds1', ds1, 'ds2', ds2, 'bl1', bl1, 'bl2', bl2);
+    ds = struct('ds1', ds1, 'ds2', ds2, 'bl1', bl1, 'bl2', bl2, 'bl', bl1-bl2);
     ds_name=sprintf('ds_bl-%gm_dl-%gm.mat', bl_lim, dt_lim); 
     ds_exist=exist(ds_name); 
 

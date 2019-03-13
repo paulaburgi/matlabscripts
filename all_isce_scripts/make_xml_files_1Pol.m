@@ -13,20 +13,20 @@ close all
 
 % data folder
   % oregon 
-    pffol       = '/data/pmb229/isce/p222f870/'; 
-    datafol     = [pffol 'data/']; 
-    baselinefol = [datafol 'baselines/']; 
-    intfol      = [pffol 'mostcombos/']; 
+%     pffol       = '/data/pmb229/isce/p222f870/'; 
+%     datafol     = [pffol 'data/']; 
+%     baselinefol = [datafol 'baselines/']; 
+%     intfol      = [pffol 'mostcombos/']; 
     %intfol      = [pffol 'HVcombos/']; 
         %intfol   = [pffol 'iscecombos']; 
     %    intfol    = '/data/pmb229/isce/p222f870/Aster_ints/'; 
         
         
   % sumatra
-%     pffol = '/data/pmb229/isce/p446f7190_sumatra/'; 
-%     datafol     = [pffol 'data/']; 
-%     baselinefol = [datafol 'baselines/']; 
-%     intfol = [pffol 'ints_SRTM/']; 
+    pffol = '/data/pmb229/isce/p446f7190_sumatra/'; 
+    datafol     = [pffol 'data/']; 
+    baselinefol = [datafol 'baselines/']; 
+    intfol = [pffol 'ints/']; 
 
     cd(intfol); 
 
@@ -34,8 +34,8 @@ close all
 % e.g. /data/pmb229/roipac/p222f870/data/baselines/
     %datecombofile = 'ds_bl-5e+06m_dl-5e+06m_HV.mat'; %oregon
     %datecombofile = 'ds_bl-5e+06m_dl-500m.mat'; %oregon
-    datecombofile = 'ds_bl-2000m_dl-5e+06m.mat';  % oregon
-    %datecombofile = 'ds_bl-2000m_dl-190m.mat'; % oregon
+    %datecombofile = 'ds_bl-2000m_dl-5e+06m.mat';  % oregon
+    datecombofile = 'ds_bl-800m_dl-100m.mat'; % sumatra
     ds = [baselinefol datecombofile]; 
     load(ds); 
     ds1 = ds.ds1; 
@@ -43,10 +43,10 @@ close all
     nslc = length(ds1); 
     
 % parameters
-    filter_strength = 0.3;  % 0.0 - 1.0
-    unwrap = 'False'; % 'True' or 'False'
+    filter_strength = 0.4;  % 0.0 - 1.0
+    unwrap = 'True'; % 'True' or 'False'
      %geocodebox = '[43.77 43.91 -123.44 -123.30]'; % p222f870, orgeon 
-     geocodebox = '[43.58 44.38 -123.76 -122.96]'; % p222f870, orgeon
+%      geocodebox = '[43.58 44.38 -123.76 -122.96]'; % p222f870, orgeon
      %geocodebox = '[0.44 0.63 100.37 100.79]'; % p446 f 7190, sumatra
 
 % for loop to make xml files and folders
@@ -159,10 +159,10 @@ close all
         fprintf(fid, sprintf('       <value>%s</value>\n', unwrap)); 
         fprintf(fid, '	</property>\n'); 
         fprintf(fid, '	<property name="unwrapper name">\n'); 
-        fprintf(fid, '       <value>grass</value>\n'); 
+        fprintf(fid, '       <value>snaphu</value>\n'); 
         fprintf(fid, '	</property>\n'); 
         fprintf(fid, '	<property name="geocode list">\n'); 
-        fprintf(fid, '       <value>["filt_topophase.flat", "los.rdr", "topophase.cor", "topophase.flat", "phsig.cor"]</value>\n'); 
+        fprintf(fid, '       <value>["filt_topophase.unw", "topophase.cor"]</value>\n'); 
         fprintf(fid, '	</property>\n'); 
         %fprintf(fid, '  <property name="geocode bounding box">\n'); 
         %fprintf(fid, sprintf('       <value>%s</value>\n', geocodebox)); 

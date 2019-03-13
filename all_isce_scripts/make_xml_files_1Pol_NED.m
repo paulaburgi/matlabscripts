@@ -16,18 +16,8 @@ close all
     pffol       = '/data/pmb229/isce/p222f870/'; 
     datafol     = [pffol 'data/']; 
     baselinefol = [datafol 'baselines/']; 
-    %intfol      = [pffol 'mostcombos/']; 
-    %intfol      = [pffol 'HVcombos/']; 
-        %intfol   = [pffol 'iscecombos']; 
-        intfol    = '/data/pmb229/isce/p222f870/NED_ints/'; 
-        
-        
-  % sumatra
-%     pffol = '/data/pmb229/isce/p446f7190_sumatra/'; 
-%     datafol     = [pffol 'data/']; 
-%     baselinefol = [datafol 'baselines/']; 
-%     intfol = [pffol 'ints_SRTM/']; 
-
+    intfol    = '/data/pmb229/isce/p222f870/NED_ints/'; 
+    
     cd(intfol); 
 
 % matlab file containing the desired date/baseline combinations. 
@@ -45,9 +35,8 @@ close all
 % parameters
     filter_strength = 0.3;  % 0.0 - 1.0
     unwrap = 'False'; % 'True' or 'False'
-     geocodebox = '[43.77 43.91 -123.44 -123.30]'; % p222f870, orgeon 
-     %geocodebox = '[43.58 44.38 -123.76 -122.96]'; % p222f870, orgeon
-     %geocodebox = '[0.44 0.63 100.37 100.79]'; % p446 f 7190, sumatra
+     %geocodebox = '[43.77 43.91 -123.44 -123.30]'; % p222f870, orgeon 
+     geocodebox = '[43.58 44.38 -123.76 -122.96]'; % p222f870, orgeon
 
 % for loop to make xml files and folders
     for i = 1:nslc

@@ -113,7 +113,7 @@ clear
         %end
         
         %intfile
-         im = sqrt(-1); 
+        im = sqrt(-1); 
         filename2 = [intdir 'filt_topophase.flat.geo']; %OR .FLAT.GEO 
         fid          = fopen(filename2,'r','native');
         [rmg2,count] = fread(fid,[nx*2,ny],'real*4');

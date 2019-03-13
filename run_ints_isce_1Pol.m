@@ -8,21 +8,22 @@
 
  
 % cd to current int dir that you want to process in 
-cd('/data/pmb229/isce/p222f870/mostcombos/'); 
+% cd('/data/pmb229/isce/p222f870/mostcombos/'); 
 %cd('/data/pmb229/isce/p222f870/HVcombos/'); 
-%cd('/data/pmb229/isce/p446f7190_sumatra/ints_SRTM'); 
-    %cd('/data/pmb229/isce/p222f870/ALOS2_data/iscecombos/'); 
+% cd('/data/pmb229/isce/p446f7190_sumatra/ints/'); 
+    cd('/data/pmb229/isce/p222f870/ALOS2_ints/iscecombos/'); 
     %cd('/data/pmb229/isce/p222f870/NED_ints/'); 
 clear
 
-datafol = '/data/pmb229/isce/p222f870/data/';
+% datafol = '/data/pmb229/isce/p222f870/data/';
+% datafol = '/data/pmb229/isce/p446f7190_sumatra/data/';
 
 
 % parameters 
     isceapp = 'insarApp.py'; % Alos=insarApp.py, sentinel=topsApp.py 
      endend = '--end=geocode';
-%     restart = '--start=geocode';
-    dostep = '--dostep=geocode'; 
+    restart = '--start=startup';
+%     dostep = '--dostep=geocode'; 
     
     
     
@@ -36,9 +37,9 @@ steps = {'startup'; 'preprocess'; 'verifyDEM'; 'pulsetiming'; 'estimateHeights';
          'unwrap'; 'unwrap2stage'; 'geocode'; 'endup'};  
 intdirs = dir('int_*'); 
 intdirs = {intdirs.name}; 
-    load([datafol 'analysis/meancor_bl_dates_area2_HH.mat']); 
-    gidx    = meancor_bl_dates.good_cor_idx; 
-    intdirs  = intdirs(gidx); 
+%     load([datafol 'analysis/meancor_bl_dates_area2_HH.mat']); 
+%     gidx    = meancor_bl_dates.good_cor_idx; 
+%     intdirs  = intdirs(gidx); 
 endidx = find(strcmp(steps, endend(7:end)));
 nints = length(intdirs); 
 nintsdone = 1; 

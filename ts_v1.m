@@ -13,11 +13,16 @@ dc     = d.dateCombos;
 bl     = abs(d.bl); % have to make bl positive for inversion to work
 dta    = diff(dn_all); 
 
+gidx2  = [0, 3, 5, 8, 11, 14, 16, 19, 20, 22, 23, 24, 26, 27, 28, 30, 31]+1; 
 bl     = bl(gidx,:); 
 dc     = dc(gidx,:); 
+bl     = bl(gidx2, :); 
+dc     = dc(gidx2, :); 
 dcv    = dc(:);
 du     = sort(unique(dcv));
 nints  = length(dc); 
+
+
 
 % large region (v2)
 y1 = 1e3;
@@ -26,6 +31,11 @@ x1 = 6.5e2;
 x2 = 2.2e3; 
 zs = [733 748 841 853]; 
 v = 'v2'; 
+% % large region 2
+% y1 = 1445; 
+% y2 = 1913; 
+% x1 = 949; 
+% x2 = 2022; 
 % small region (v1)
 % y1 = 975; 
 % y2 = 1224; 
@@ -49,13 +59,13 @@ v = 'v2';
 % zs = [127 127 181 181]; % 1 pixel in stable region
 % v = 'invproj_v1'; 
 %region with landslide at some point
-x1 = 1400; 
-x2 = 1700; 
-y1 = 500; 
-y2 = 650; 
-%zs = [69 73 205 215];
-zs = [94 98 209 214];
-v = 'invproj_v2_ls'; 
+% x1 = 1400; 
+% x2 = 1700; 
+% y1 = 500; 
+% y2 = 650; 
+% %zs = [69 73 205 215];
+% zs = [94 98 209 214];
+% v = 'invproj_v2_ls'; 
 
 % size
 npy = (y2-y1)+1; 
@@ -82,31 +92,45 @@ for i =  1:nints %:nints %round(linspace(1,nints, 16)) %1:nints
             qf = strfind(l1, '"'); 
             nx = str2num(l1(qf(1)+1:qf(2)-1)); 
             ny = str2num(l1(qf(3)+1:qf(4)-1)); 
+            % lat long
+            dx1 = -123.76027777777779; 
+            dd  = 0.0002777777777777778; 
+            dy1 = 44.38027777777778; 
+            dx  = dx1:dd:(dx1+dd*nx)-dd; 
+            dy  = dy1:-dd:(dy1-dd*ny)+dd; 
        end
         
         %intfile
         im = sqrt(-1); 
-        filename2 = [intdir 'filt_topophase.unw.geo']; 
-        h         = fopen(filename2,'r');
-        [F,count] = fread(h,2*nx*ny,'float32');
-        status    = fclose(h); 
-        rmg       = reshape(F,2*nx,ny); 
-        phs       = rmg((nx+1):(nx*2),:);
-        mag       = flipud(rmg(1:nx,:)');
+            filename2 = [intdir 'filt_topophase.unw.geo']; 
+            h         = fopen(filename2,'r');
+            [F,count] = fread(h,2*nx*ny,'float32');
+            status    = fclose(h); 
+            rmg       = reshape(F,2*nx,ny); 
+            phs       = rmg((nx+1):(nx*2),:); 
+%             filename    = [intdir 'filt_topophase.flat.geo']; 
+%             fid         = fopen(filename, 'r','native');
+%             [rmg,count] = fread(fid,[nx*2,ny],'real*4');
+%             status      = fclose(fid);
+%             real        = ((rmg(1:2:nx*2,1:ny))')';
+%             imag        = ((rmg(2:2:nx*2,1:ny))')';
+%             phs         = angle(real+im*imag); 
+        %mag       = flipud(rmg(1:nx,:)');
         phs       = flipud(phs');
         phsbox    = phs(y1:y2, x1:x2); 
+        dxt       = dx(x1:x2); 
+        dyt       = dy(y1:y2); 
         z         = mean(mean(phsbox(zs(1):zs(2), zs(3):zs(4)))); 
         za = [za; z];
         phs_all(:,:,i) = phsbox-z; 
-        disp(i); 
         p = phsbox(:); 
         npix        = length(p); 
         
-        if i == nints
-            phs_box_vec = struct('y1y2x1x2', [y1 y2 x1 x2]', ...
-                          'phs_all', phs_all, 'npix', npix); 
-            save([pf_fol 'timeseries/phs_box_vec_' v '.mat'], 'phs_box_vec'); 
-        end
+%         if i == nints
+%             phs_box_vec = struct('y1y2x1x2', [y1 y2 x1 x2]', ...
+%                           'phs_all', phs_all, 'npix', npix); 
+%             save([pf_fol 'timeseries/phs_box_vec_' v '.mat'], 'phs_box_vec'); 
+%         end
 end
 % end
 
@@ -132,13 +156,14 @@ G       = G.*d2y;
 mz = []; 
 m  = [];
 zz = [];
-lamda = 1; 
+Gzt = inv(Gz'*Gz)*Gz';
+Gt  = inv(G'*G)*G';
 for i = 1:npy
     for j = 1:npx
         vect    = [phs_all(i,j,:)];
         vect    = vect(:); 
-        mestz   = inv((Gz'*Gz)+eye(2).*lamda)*Gz'*vect;  
-        mest    = inv((G'*G))*G'*vect;  
+        mestz   = Gzt*vect;  
+        mest    = Gt*vect;  
         mzvel   = mestz(1); 
         mvel    = mest(1); 
         mz(i,j) = mzvel; 
@@ -161,27 +186,42 @@ end
 
 %% plot 
 %close all; 
-figure; hold on; 
+figure('units', 'normalized', 'outerposition', [0 1 .5 1]); hold on; 
 subplot(2,1,1); hold on; 
-pcolor((m)); shading flat; colorbar; hold on; axis equal; 
-plot([zs(3) zs(3) zs(4) zs(4) zs(3)], [zs(1) zs(2) zs(2) zs(1) zs(1)], 'k-'); 
-caxis([-10 10]); 
+pcolor(flipud(dxt), dyt, flipud(m)); shading flat; colorbar; hold on; 
+plot([dxt(zs(3)) dxt(zs(3)) dxt(zs(4)) dxt(zs(4)) dxt(zs(3))], [dyt(zs(1)) dyt(zs(2)) dyt(zs(2)) dyt(zs(1)) dyt(zs(1))], 'k-'); 
+caxis([-20 20]); 
 title('no dem correction'); 
-subplot(2,1,2); 
-pcolor((mz)); shading flat; colorbar; hold on; axis equal; 
-plot([zs(3) zs(3) zs(4) zs(4) zs(3)], [zs(1) zs(2) zs(2) zs(1) zs(1)], 'k-'); 
+colorbar('off'); 
+colormap bluewhitered
+axis equal
+subplot(2,1,2); hold on; 
+pcolor(flipud(dxt), dyt, flipud(mz)); shading flat; colorbar; hold on;  
+plot([dxt(zs(3)) dxt(zs(3)) dxt(zs(4)) dxt(zs(4)) dxt(zs(3))], [dyt(zs(1)) dyt(zs(2)) dyt(zs(2)) dyt(zs(1)) dyt(zs(1))], 'k-'); 
 title('dem correction'); 
-caxis([-10 10]); 
-
+caxis([-20 20]); 
+colorbar('off'); 
+colormap bluewhitered
+axis equal
 
 linkaxes
-axis([0 npx 0 npy]);
+% axis([0 npx 0 npy]);
+
+dcmObj = datacursormode;
+set(dcmObj, 'UpdateFcn', @datacursorprecision);
 
 
 
 
-
-
+% subplot(3,1,3); hold on; 
+figure('units', 'normalized', 'outerposition', [0 1 .5 1]); hold on; 
+pcolor(flipud(dxt), dyt, flipud(phsbox(:,:,1))); shading flat; colorbar; hold on; 
+plot([dxt(zs(3)) dxt(zs(3)) dxt(zs(4)) dxt(zs(4)) dxt(zs(3))], [dyt(zs(1)) dyt(zs(2)) dyt(zs(2)) dyt(zs(1)) dyt(zs(1))], 'k-'); 
+title('int1'); 
+% caxis([-3.14 3.14]); 
+colorbar('off'); 
+colormap jet
+axis equal
 
 
 
