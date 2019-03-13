@@ -7,7 +7,7 @@ ccdir = '/data/pmb229/other/clearcuttingTStest/';
 
 % load baseline data & int data
 
-dset = 'D2'; % D1=OR ALOS, D2=Fran's RS2, D3=SF Sentinel 
+dset = 'D1'; % D1=OR ALOS, D2=Fran's RS2, D3=SF Sentinel 
 
 if strcmp(dset, 'D1')
     load([ccdir 'baselines.mat']); 
@@ -38,8 +38,8 @@ dn_all = baselines2.dn_all;
     end
     
 % % select which ints to work with
-%     bl     = bl(gidx,:); 
-%     dc     = dc(gidx,:); 
+    bl     = bl(gidx,:); 
+    dc     = dc(gidx,:); 
     dcv    = dc(:);
     du     = sort(unique(dcv));
 

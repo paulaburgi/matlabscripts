@@ -1,7 +1,7 @@
 %startup.m
 
-addpath( '/home/pmb229/matlab/ALLPS/resamp'); 
-addpath /home/pmb229/matlab/ALLPS/
+%addpath( '/home/pmb229/matlab/ALLPS/resamp'); 
+%addpath /home/pmb229/matlab/ALLPS/
 addpath /home/rlohman/insar/MY_SCR/
 addpath /home/rlohman/insar/INT_SCR/
 
