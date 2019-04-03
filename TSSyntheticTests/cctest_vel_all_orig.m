@@ -61,7 +61,9 @@ dn_all = baselines2.dn_all;
         xa = [xa; x];
         ya = [ya; y];
     end
-    Gb = G; 
+    Gb  = G; 
+    d2y = 0.00274; % convert days to years
+    G   = G.*d2y; 
 
 %% Compare data to inv with and without DEM Error
 % noise weight

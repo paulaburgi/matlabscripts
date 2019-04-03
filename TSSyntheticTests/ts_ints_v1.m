@@ -20,13 +20,13 @@ nints  = length(dc);
 
 % load data exported from ts_v1.m in packrat ~/matlab/
 % int
-% vr = 'invproj_v1'; 
-% load(['phs_box_vec_' vr '.mat']); 
-% phs_alla = phs_box_vec.phs_all; 
-% phs_all = phs_alla(106:145, 153:194, :); % needs to be y:y, x:x, :
+vr = 'invproj_v1'; 
+load(['phs_box_vec_' vr '.mat']); 
+phs_alla = phs_box_vec.phs_all; 
+phs_all = phs_alla(106:145, 153:194, :); % needs to be y:y, x:x, :
 % single point
-load('defv1.mat'); % def
-phs_all = reshape(def, 1, 1, 32); 
+% load('defv1.mat'); % def
+% phs_all = reshape(def, 1, 1, 32); 
 
 
 

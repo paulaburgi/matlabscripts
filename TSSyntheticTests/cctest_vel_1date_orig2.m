@@ -16,7 +16,7 @@ ccdir = '/data/pmb229/other/clearcuttingTStest/';
     d      = meancor_bl_dates; 
     gidx   = d.good_cor_idx; 
     dc     = d.dateCombos; 
-    bl     = abs(d.bl); % have to make bl positive for inversion to work
+    bl     = (d.bl); % have to make bl positive for inversion to work
     dta    = diff(dn_all); 
 
 
@@ -67,9 +67,9 @@ ccdir = '/data/pmb229/other/clearcuttingTStest/';
 
 %% Compare data to inv with and without DEM Error
 % noise weight
-nw  = 0.1; 
-%n   = [(rand(length(dc), 1)-0.5).*nw; zeros(nrdi, 1)];
-load('noisev1.mat'); 
+nw  = .0; 
+n   = [(rand(length(dc), 1)-0.5).*nw; zeros(nrdi, 1)];
+%load('noisev1.mat'); 
 
 % define time steps and "real" deformation
 vel  = ones(nvels, 1).*0; 
@@ -83,9 +83,9 @@ ints  = intsr+n;
 % add baseline term to G matrix
 blg    = [(4.*pi.*bl)./(l.*sr.*sind(los)); zeros(nrdi, 1)]; 
 %blg    = [bl; zeros(nrdi, 1)]; 
-Gbl    = [G abs(blg)]; 
+Gbl    = [G (blg)]; 
 dz     = 30; 
-intsrz = intsr+abs(blg.*dz); 
+intsrz = intsr+(blg.*dz); 
 intsz  = intsrz+n; 
 
 % calc Gsvd with baseline term 
@@ -100,9 +100,9 @@ mz0     = mzsvd(end);
 %% Add it DEM error with each time step 
 
 dz     = 30;           % topo error
-iz     = abs(blg.*dz); % addition to phase due to topo error
+iz     = (blg.*dz); % addition to phase due to topo error
 intsiz = intsr;        % initiate ints where only some have additional topo error phase
-c      = 10;           % date index after which topo error is introduced
+c      = 32;           % date index after which topo error is introduced
 
 for j = 1:length(dc)
     % add phase to ints that include dates greater than j
@@ -201,7 +201,7 @@ xlabel('Date of Deforestation');
 ylabel('Residual'); 
 datetick('x'); 
 xlim([vdates(1) vdates(end)]);
-
+close all; 
 
 figure; hold on; box on; 
 plot(vdates, zeros(nvels, 1), 'k'); %, 'HandleVisibility','off'); 
@@ -214,13 +214,13 @@ yl = ylim;
 xlabel('Date'); 
 ylabel('Velocity'); 
 datetick('x'); 
-xlim([vdates(1) vdates(end)]);
+xlim([vdates(1)-100 vdates(end)+100]);
 ylim(yl);
-ylim([-10 10]); 
-p = 5; % precision
+ylim([-15 15]); 
+p = 3; % precision
 legend(['true velocity,   z=' num2str(dz, p) 'm'], ...
-       ['modeled velocity (linear), z=' num2str(mz, p) 'm'], ...
-       ['modeled velocity (linear), z=' num2str(mz, p) 'm'], ...
+       ['modeled velocity, no error, z=' num2str(mz0, p) 'm'], ...
+       ['modeled velocity, DEM error, z=' num2str(mz, p) 'm'], ...
        ['dem error (non lin), z=' num2str(mnlzi, p) 'm'], ... 
        'location', 'southeast'); 
    

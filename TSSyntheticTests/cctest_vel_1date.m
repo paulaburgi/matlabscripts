@@ -1,45 +1,33 @@
 %% Load data, build basic G
 
-%close all
+% close all
 clear 
 
 ccdir = '/data/pmb229/other/clearcuttingTStest/'; 
 
 % load baseline data & int data
-    load([ccdir 'baselines.mat']); 
-    load([ccdir 'meancor_bl_dates_area2_HH.mat']); 
+    load([ccdir 'ALOS_p222f870_params_tscombos_old.mat']); 
     l = 0.236; sr = 8.5e5; los = 38.7; 
 
 % extract useful info
-    dn_all = baselines2.dn_all; 
-    bl_all = baselines2.bl_all; 
-    d      = meancor_bl_dates; 
-    gidx   = d.good_cor_idx; 
-    dc     = d.dateCombos; 
-    bl     = abs(d.bl); % have to make bl positive for inversion to work
+    dn_all = params.dn_all; 
+    bl_all = params.bl_all; 
+    gidx   = params.intcombos; 
     dta    = diff(dn_all); 
-    
-    % gidx, remove a few
-    gidx = [gidx(1:17); gidx(20:end)]; 
-
-% extra ints to connect with network
-    exints = [733236 733604; 733742 733972; 733788 733972];
-    [a,b]  = dsearchn(dc, exints);
-     %gidx   = [gidx; a]; 
 
 % select which ints to work with
-    bl     = bl(gidx,:); 
-    dc     = dc(gidx,:); 
-    dcv    = dc(:);
-    du     = sort(unique(dcv));
+    bl     = bl_all(gidx); 
+    bl     = bl(:,2)-bl(:,1);
+    dc     = dn_all(gidx); 
+    du     = sort(unique(dc(:))); 
     nvels  = length(du)-1;
     nints  = length(dc); 
 
 % build G matrix
-    G  = zeros(length(dc), length(du)-1);
+    G  = zeros(nints, nvels);
     xa = [];
     ya = [];
-    for i = 1:length(G)
+    for i = 1:size(G, 1)
         xi     = dc(i,1); 
         yi     = dc(i,2); 
         x = find(du == xi); 
@@ -56,7 +44,7 @@ ccdir = '/data/pmb229/other/clearcuttingTStest/';
     d2y = 0.00274; % convert days to years
     Ga = G.*d2y; 
     
-    % deal with unconstrained dates 
+% Add rows s.t. mean vel = avg vel for each unconstrained date
     rdi = find(sum(G)' == 0);
     nrdi = length(rdi);
     G  = [Ga; ones(nrdi, nvels)*(1/(nvels-1))];
@@ -65,60 +53,61 @@ ccdir = '/data/pmb229/other/clearcuttingTStest/';
         idx = i-1; 
         G(end-idx, rdi(i)) = -1; 
     end
-
+    zrdi = zeros(nrdi, 1); % need to add to end of future vectors
 
 %% Compare data to inv with and without DEM Error
 % noise weight
-nw  = 0.1; 
-% n   = [(rand(length(dc), 1)-0.5).*nw; zeros(nrdi, 1)];
-load('noisev1.mat'); 
+nw  = 1; % nw=1 ~ +/-1cm noise (disp = lamda*phase / 4*pi) 
+n   = [(rand(length(dc), 1)-0.5).*nw; zrdi];
 
 % define time steps and "real" deformation
-%vel  = ones(nvels, 1).*0; 
-%def  = Ga*vel; 
-load('defv1.mat');
-def = def; 
-def = [def(1:17); def(20:end)]; 
-n = zeros(length(def)+nrdi, 1); 
+vel  = ones(nvels, 1).*0; 
+def  = Ga*vel; 
 
 % create ints
-intsr = [def; zeros(nrdi, 1)];
+intsr = [def; zrdi];
 ints  = intsr+n;
 
 % add baseline term to G matrix
-blg    = [(4.*pi.*bl)./(l.*sr.*sind(los)); zeros(nrdi, 1)]; 
-%blg    = [bl; zeros(nrdi, 1)]; 
-Gbl    = [G abs(blg)]; 
-dz     = 30; 
-%intsrz = intsr+abs(blg.*dz); 
-%intsz  = intsrz+n; 
-intsz = intsr; 
-
+blg    = [(4.*pi.*bl)./(l.*sr.*sind(los)); zrdi]; 
+Gbl    = [G blg]; 
+dz     = 30;        % topo error
+iz     = blg.*dz;   % addition to phase due to topo error
+intsrz = intsr + iz; 
+intsnz = intsrz + n; 
 
 % calc Gsvd with baseline term 
 r2      = rank(Gbl); 
 [U,S,V] = svd(Gbl); 
 Gsvd    = V(:,1:r2)*inv(S(1:r2,1:r2))*U(:,1:r2)'; 
-mzsvd   = Gsvd*intsz; 
+mzsvd   = Gsvd*intsnz; 
 mvel0   = mzsvd(1:end-1); 
 mz0     = mzsvd(end); 
 
-
 %% Add it DEM error with each time step 
+% date of clear cutting
+    % c = du(1)-1      -> no DEM error in TS
+    % c = du(1)+1      -> DEM error present for whole TS
+    % c = du(ndates)+1 -> no DEM error in TS
+c  = du(11); 
 
-dz     = 30;           % topo error
-iz     = abs(blg.*dz); % addition to phase due to topo error
-intsiz = intsr;        % initiate ints where only some have additional topo error phase
-c      = 10;           % date index after which topo error is introduced
-
+% Initiate ints where only some have additional topo error phase
+intsiz = intsr;  
+btwint = zeros(length(dc), 1); 
+% loop through ints, if DEM error is present after date c, then 
 for j = 1:length(dc)
+    idx1 = dc(j,1) <= c;
+    idx2 = dc(j,2) >= c;
     % add phase to ints that include dates greater than j
-    if xa(j) > c
+    if idx1 && idx2
+        btwint(j,1) = 1; 
+        intsiz(j) = intsiz(j)+iz(j); 
+    elseif ~idx1
         intsiz(j) = intsiz(j)+iz(j); 
     end
 end
 
-intsiz = intsiz + n; 
+% ALSO: make it so you take out dates between which cutting happens
 
 mest     = Gsvd*intsiz;
 mbl      = mest(end); 
@@ -182,6 +171,8 @@ for l = 1%1:nvels
 
     % LM method
     [varf, k, Cm, X2]   = LMLSQ_project(f, var0, J, ep, svar); 
+    f2 = matlabFunction(f);
+    %[varf2]   = lsqnonlin(f2, var0); 
     mnlvel = [mnlvel varf(1:end-1)]; 
     mnlz   = [mnlz; varf(end)]; 
 
@@ -194,9 +185,9 @@ disp(c);
 mnlveli = mnlvel(:,idx); 
 mnlzi = mnlz(idx); 
 
-figure; hold on; 
-plot(r_all); 
-plot(idx, m, '*');
+% figure; hold on; 
+% plot(r_all); 
+% plot(idx, m, '*');
 
 %% plot
 
@@ -209,13 +200,14 @@ plot(vdates, [mvel./100], 'linewidth', 2, 'HandleVisibility','off');
 plot(vdates, [mvel./100], 'linewidth', 2); 
 plot(vdates, [mnlveli/100], 'linewidth', 2); 
 yl = ylim; 
-plot([vdates(c); vdates(c)], [-100 100], 'k--'); 
+plot([c; c], [-100 100], 'k--'); 
 plot(vdates(rdi), varf(rdi), '*'); 
 xlabel('Date'); 
 ylabel('Velocity'); 
 datetick('x'); 
-xlim([vdates(1) vdates(end)]);
-ylim(yl); 
+xlim([vdates(1)-100 vdates(end)+100]);
+ylim([-1 1]);
+% ylim(yl); 
 p = 3; % precision
 legend(['dem error (lin), z=' num2str(mz, p) 'm'], ...
        ['dem error (non-lin), z=' num2str(mnlzi, p) 'm'], ... 
