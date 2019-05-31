@@ -70,7 +70,7 @@ for i = 1:nccdates
     
     % define time steps and "real" deformation
     d2y  = 0.00274;        % days to years
-    vel  = ones(nvels-1,1)*0; %(diff(du)*d2y)*1; % vel in cm/yr
+    vel  = ones(nvels,1)*0; %(diff(du)*d2y)*1; % vel in cm/yr
     def  = Gbl(1:end-length(zrdi),1:end-1)*vel; 
     % create ints
     intsr   = [def; zrdi];
@@ -119,8 +119,8 @@ for j = 1:nccdates
     mvi  = cell2mat(mv_all(j)); 
     mvi2 = cell2mat(mv_all2(j)); 
     for i = 1:ntests
-        plot(du, [0; 0; mvi(:,i)], '-', 'color', cmaps(j,:), 'linewidth', 1); 
-         plot(du, [0; 0; mvi2(:,i)], '--', 'color', cmaps(j,:), 'linewidth', 1); 
+        plot(du, [0; mvi(:,i)], '-', 'color', cmaps(j,:), 'linewidth', 1); 
+         plot(du, [0; mvi2(:,i)], '--', 'color', cmaps(j,:), 'linewidth', 1); 
     end
     m = [m; mean(mean(mvi))]; 
     s = [s; std(mean(mvi))]; 

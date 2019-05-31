@@ -20,7 +20,7 @@ function [G, zrdi] = make_cctest_G_randBl(dc, du)
 % Add rows s.t. mean vel = avg vel for each unconstrained date
     rdi    = find(sum(G)' == 0);
     nrdi   = length(rdi);
-    avgvel = (1/(nvels-1)); %-nrdi)); 
+    avgvel = (1/(nvels-1-nrdi)); 
     G      = [Ga; ones(nrdi, nvels)*avgvel]; 
     rng    = 1:nrdi; 
     for i = rng
@@ -28,9 +28,6 @@ function [G, zrdi] = make_cctest_G_randBl(dc, du)
         G(end-idx, rdi(i)) = -1; 
     end
     zrdi = zeros(nrdi, 1); % need to add to end of other vectors
-
- % get rid of 1st column s.t. 1st time step = 0
-    G    = G(:,2:end); 
 
     
     

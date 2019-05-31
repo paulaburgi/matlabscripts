@@ -42,7 +42,7 @@
         ua = [ua; i1 i2];
     end
     
-%     params = struct('dn_all', d, 'bl_all', b, 'intcombos', ua); 
+     params = struct('dn_all', d, 'bl_all', b, 'intcombos', ua); 
 %     save([ccdir 'ALOS_p222f870_params_tscombos_old.mat'], 'params'); 
 
 
@@ -76,18 +76,17 @@
         ua = [ua; i1 i2];
     end
 
-    params = struct('dn_all', d, 'bl_all', b, 'intcombos', ua); 
+    %params = struct('dn_all', d, 'bl_all', b, 'intcombos', ua); 
 %     save([ccdir 'Sentinel_params_1.mat'], 'params'); 
 
 
     
-% Sentinel data
-    load([ccdir 'Francisco_rs2_bl.mat']); baselines2 = fs; 
-    load([ccdir 'Francisco_rs2_ints.mat']); meancor_bl_dates=fs2; 
-    d  = baselines2.dn_all; 
-    b  = baselines2.bl_all; 
-    u  = meancor_bl_dates.good_cor_idx; 
-    ud = meancor_bl_dates.dateCombos; 
+% Sentinel data - random
+    d  = [datenum('01062015', 'ddmmyyyy'):12:datenum('01042019', 'ddmmyyyy')]'; 
+    b  = [0; (randn(length(d)-1,1)*70)]; 
+    ud = [[1:length(d)-1]' [2:length(d)]']; 
+    ud = d(ud); 
+    u  = [1:length(ud)]';
     ua = [];
     for i = 1:length(u)
         x  = ud(u(i),:);
@@ -96,8 +95,13 @@
         ua = [ua; i1 i2];
     end
 
-%     params = struct('dn_all', d, 'bl_all', b, 'intcombos', ua); 
-%     save([ccdir 'Radarsat2_francisco_params_1.mat'], 'params'); 
+     params2 = struct('dn_all', d, 'bl_all', b, 'intcombos', ua); 
+%     save([ccdir 'rand_params_1.mat'], 'params'); 
+
+
+
+
+
 
 
 
@@ -111,8 +115,43 @@
     for i=1:length(ic)
         plot(dn(i,:), bl(i,:), 'k')
     end
-    plot(dn_all, bl_all, '.', 'markersize', 15);
+    plot(dn_all, bl_all, '.k', 'markersize', 15);
     datetick; 
     xlabel('date'); ylabel('baseline (m)'); 
     
+    
+%% baseline plot for andes pres
+close; 
+figure; hold on; 
+yl = [-4200 4000];
+subplot(2,1,1); hold on; box on; grid on; 
+    dn_all = params.dn_all;
+    bl_all = params.bl_all;
+    ic     = params.intcombos;
+    bl     = bl_all(ic); 
+    dn     = dn_all(ic); 
+    for i=1:length(ic)
+        plot(dn(i,:), bl(i,:), 'k')
+    end
+    plot(dn_all, bl_all, '.k', 'markersize', 10);
+    datetick; 
+    ylabel('Baseline (m)'); 
+    ylim(yl); 
+subplot(2,1,2); hold on; box on; grid on; 
+    dn_all = params2.dn_all;
+    bl_all = params2.bl_all;
+    ic     = params2.intcombos;
+    bl     = bl_all(ic); 
+    dn     = dn_all(ic); 
+    for i=1:length(ic)
+        plot(dn(i,:), bl(i,:), 'k')
+    end
+    plot(dn_all, bl_all, '.k', 'markersize', 10);
+    datetick; 
+    xlabel('Date'); ylabel('Baseline (m)'); 
+    ylim(yl); 
+    xlim([datenum('01012015', 'ddmmyyyy') datenum('01012020', 'ddmmyyyy')]);
+    
+    
+
     

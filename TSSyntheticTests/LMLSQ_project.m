@@ -1,7 +1,7 @@
 % Midterm 1
 % Problem 1, part a
 
-function [x, k, Cm, X2] = LMLSQ_project(h, var0, J, ep, svar)
+function [x, k, Cm, X2, tdemall, vall, zall] = LMLSQ_project(h, var0, J, ep, svar)
 
 % INPUTS:
 % h    = Functional form of our inverse problem - data (n x 1 symbolic)
@@ -22,7 +22,7 @@ function [x, k, Cm, X2] = LMLSQ_project(h, var0, J, ep, svar)
 
 
 % Set generic parameters
-v     = 0.5;         % Dampening factor
+v     = 0.1;         % Dampening factor
 l0    = 1;           % Lamda (dampening)
 
 % Find number of variables to solve for
@@ -33,11 +33,11 @@ I      = eye(nv);
 
 % Set number of iterations 
 % Note: Will only iterate until convergence test is passed
-nints = 10; 
+nits = 100; 
 
-dea = []; dca = [];
+dea = []; dca = []; tdemall = []; vall = []; zall = [];
 % Iterate 
-for k = 1:nints
+for k = 1:nits
     % find initial values
     if k == 1
         for j = 1:nv
@@ -93,6 +93,12 @@ for k = 1:nints
     ri = rn; 
     ci = cn; 
     
+%     v
+%     tdem 
+%     z
+tdemall = [tdemall; tdem]; 
+vall    = [vall; v];
+zall    = [zall; z]; 
 end
 
 Cm = inv(Ji'*Ji); 

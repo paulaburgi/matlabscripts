@@ -34,7 +34,7 @@ function [Gbl, zrdi, blg] = make_cctest_G(dc, du, bl, rparams)
 %         Ga(1,:) = 0; 
 %     end
     nrdi   = length(rdi);
-    avgvel = (1/(nvels-1)); %-nrdi)); 
+    avgvel = (1/(nvels-1-nrdi)); 
     G      = [Ga; ones(nrdi, nvels)*avgvel]; 
     rng    = 1:nrdi; 
     for i = rng
@@ -46,7 +46,7 @@ function [Gbl, zrdi, blg] = make_cctest_G(dc, du, bl, rparams)
 % add baseline term to G matrix
     %blg    = [(4.*pi.*bl)./(rparams(1).*rparams(2).*sind(rparams(3))); zrdi]; 
     blg    = [(2*bl)./(rparams(2).*sind(rparams(3))); zrdi]; 
-    Gbl    = [G(:,2:end) blg]; 
+    Gbl    = [G blg]; 
     %Gbl    = [G blg]; 
     %Gbl    = [zeros(length(G),1) G blg]; 
 

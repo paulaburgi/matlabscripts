@@ -38,11 +38,11 @@ nints = length(intdirs);
 %     intdir1  = ['int_' datestr(dn(1,1), 'yymmdd') '_' datestr(dn(1,2), 'yymmdd')]; 
 %     cd(intdir1);
 % get nx, ny
-%     x  = importdata('topophase.cor.geo.vrt');
-%     l1 = x{1}; 
-%     qf = strfind(l1, '"'); 
-%     nx = str2num(l1(qf(1)+1:qf(2)-1)); 
-%     ny = str2num(l1(qf(3)+1:qf(4)-1)); 
+    x  = importdata('topophase.cor.geo.vrt');
+    l1 = x{1}; 
+    qf = strfind(l1, '"'); 
+    nx = str2num(l1(qf(1)+1:qf(2)-1)); 
+    ny = str2num(l1(qf(3)+1:qf(4)-1)); 
 % 
 % % write a tif file, to get ref frame 
 %     system('gdal_translate topophase.cor.geo.vrt tempcortif.tif'); 

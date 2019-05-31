@@ -1,7 +1,7 @@
 %% Load data, build basic G
 
 %close all
-%clear 
+clear 
 
 ccdir = '/data/pmb229/other/clearcuttingTStest/'; 
 
@@ -111,7 +111,7 @@ mz0     = mzsvd(end);
 dz     = 30;           % topo error
 iz     = (blg.*dz); % addition to phase due to topo error
 intsiz = intsr;        % initiate ints where only some have additional topo error phase
-c      = 1;           % date index after which topo error is introduced
+c      = 5;           % date index after which topo error is introduced
 
 for j = 1:length(dc)
     % add phase to ints that include dates greater than j
