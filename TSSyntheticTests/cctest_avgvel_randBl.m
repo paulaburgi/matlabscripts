@@ -35,7 +35,7 @@ cd(ccdir);
     ccdates    = [du(1)-12; du+1]; 
     nccdates   = length(ccdates); 
     % number of rand baselines generated per DEM error introduction step
-    ntests     = 10000; 
+    ntests     = 1000; 
     % misc
     mb_all     = {};
     mv_all     = {};

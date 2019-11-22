@@ -3,8 +3,8 @@
 % geometries. 
 
 
- keyboard; % DON'T DELETE???
- keyboard; 
+%  keyboard; % DON'T DELETE???
+%  keyboard; 
 
 %close all
 clear 
@@ -41,7 +41,7 @@ cd(ccdir);
     ccdates    = [du(1)-12; du+1]; 
     nccdates   = length(ccdates); 
     % number of rand baselines generated per DEM error introduction step
-    ntests     = 10000; 
+    ntests     = 1; 
     % misc
     mb_all1    = {};
     mv_all1    = {};

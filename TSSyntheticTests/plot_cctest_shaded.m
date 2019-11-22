@@ -1,6 +1,6 @@
 % run cctest_avgvel_randBl.m for m2 and b2. 
 
-
+% 
 % h = figure; hold on; box on; 
 % options = struct('x_axis', ccdates, 'error', 'std', 'handle', gcf, 'color_area', ...
 %     [0.5 0.5 0.5], 'color_line', [0.5 0.5 0.5], 'alpha', 0.33, 'line_width', 1);
@@ -13,8 +13,8 @@
 % plot_areaerrorbar(b2, options);
 % ylim([-40 40])
 % datetick; 
-
-% for sentinel tests
+% 
+% % for sentinel duration tests
 % h = figure; hold on; box on; 
 % options = struct('x_axis', d, 'error', 'std', 'handle', gcf, 'color_area', ...
 %     [0.5 0.5 0.5], 'color_line', [0.5 0.5 0.5], 'alpha', 0.33, 'line_width', 1);

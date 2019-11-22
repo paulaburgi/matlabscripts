@@ -1,6 +1,6 @@
 
 
-%clear 
+clear 
 ccdir = '/data/pmb229/other/clearcuttingTStest/'; 
 cd(ccdir); 
 
@@ -95,10 +95,12 @@ set(dcmObj, 'UpdateFcn', @datacursorprecision);
 d_bl   = {}; 
 pf_all = [];
 lall   = [];
+nff    = [];
 for i= 1:length(C)
     if ismember(i,gidx)
         % find indices for each unique p/f combo
             idxi = find(ic == i); 
+            nff  = [nff; length(idxi)];
         % pull out baseline and dates for all indices for each p/f
             [di,didx]  = sort(d(idxi,:)); 
             bli        = bl(idxi,:); 
@@ -152,42 +154,87 @@ end
 
 
 
+% mean bl
+mbl = [];
+for i=1:length(d_bl); 
+    x = cell2mat(d_bl(i)); 
+    mbl = [mbl; mean(x(:,2))]; 
+end
+figure; 
+histogram(mbl, 'BinWidth', 500, 'BinLimits', [-1000 4000]); 
+
+
+
+
+%% make random baselines with limits that are large
+
+dt_lim = 150; % days
+bl_lim = 1000; % meters
+
+gidx_all = {};
+d1         = '20070601';
+d2         = '20110101';
+dn_all     = [datenum(d1, 'yyyymmdd'):46:datenum(d2, 'yyyymmdd')]';
+d_bl       = {}; 
+for i = 1:1000
+    bl_all        = randn(length(dn_all),1)*1100; 
+    d_bl          = [d_bl; dn_all bl_all]; 
+    
+    dcom          = combnk(dn_all,2);
+    bcom          = combnk(bl_all,2);
+
+    diffd         = abs(diff(dcom'));
+    bc            = find(diffd<dt_lim);
+    dcom_tb       = dcom(bc,:); 
+    bcom_tb       = bcom(bc,:); 
+
+    diffb         = abs(diff(bcom_tb')); 
+    dc            = find(diffb<bl_lim);
+    gcombos       = dcom_tb(dc,:);
+    [~,gidx]      = ismember(gcombos, dn_all); 
+    gidx_all      = [gidx_all; gidx];
+end
+
+% save(['rand_all_params_d_bl_d' num2str(dt_lim) '-bl' num2str(bl_lim) '.mat'], 'd_bl'); 
+% save(['rand_all_params_gidx_all_d' num2str(dt_lim) '-bl' num2str(bl_lim) '.mat'], 'gidx_all'); 
+
+
 
 %% plot for andes seminar
 
-close all; 
-
-figure; hold on; box on; 
-plot([datenum('01012006', 'ddmmyyyy') datenum('01052012', 'ddmmyyyy')], [0 0], 'k--'); 
-
-
-for i =1:length(d_bl)
-    dbli = cell2mat(d_bl(i)); 
-    gidx = cell2mat(gidx_all(i)); 
-    dni  = dbli(:,1); 
-    dni  = dni(gidx); 
-    bli  = dbli(:,2); 
-    bli  = bli(gidx); 
-    for j = 1:length(bli)
-        plot(dni(j,:), bli(j,:), 'color', [0.7 0.7 0.7]); %, cmap(i,:)); 
-    end
-    plot(dni, bli, '.', 'markersize', 10, 'color', [0.7 0.7 0.7]); %, cmap(i,:));
-end
-dbli = cell2mat(d_bl(57)); 
-gidx = cell2mat(gidx_all(57)); 
-dni  = dbli(:,1); 
-dni  = dni(gidx); 
-bli  = dbli(:,2); 
-bli  = bli(gidx); 
-for j = 1:length(bli)
-    plot(dni(j,:), bli(j,:), 'k', 'linewidth', 2); 
-end
-plot(dni, bli, 'k.', 'markersize', 20);
-datetick; 
-xlabel('Date'); 
-ylabel('Perp Baseline (m)'); 
-xlim([datenum('01012007', 'ddmmyyyy') datenum('01052011', 'ddmmyyyy')]); 
-ylim([-6500 6500]);
+% close all; 
+% 
+% figure; hold on; box on; 
+% plot([datenum('01012006', 'ddmmyyyy') datenum('01052012', 'ddmmyyyy')], [0 0], 'k--'); 
+% 
+% 
+% for i =1:length(d_bl)
+%     dbli = cell2mat(d_bl(i)); 
+%     gidx = cell2mat(gidx_all(i)); 
+%     dni  = dbli(:,1); 
+%     dni  = dni(gidx); 
+%     bli  = dbli(:,2); 
+%     bli  = bli(gidx); 
+%     for j = 1:length(bli)
+%         plot(dni(j,:), bli(j,:), 'color', [0.7 0.7 0.7]); %, cmap(i,:)); 
+%     end
+%     plot(dni, bli, '.', 'markersize', 10, 'color', [0.7 0.7 0.7]); %, cmap(i,:));
+% end
+% dbli = cell2mat(d_bl(57)); 
+% gidx = cell2mat(gidx_all(57)); 
+% dni  = dbli(:,1); 
+% dni  = dni(gidx); 
+% bli  = dbli(:,2); 
+% bli  = bli(gidx); 
+% for j = 1:length(bli)
+%     plot(dni(j,:), bli(j,:), 'k', 'linewidth', 2); 
+% end
+% plot(dni, bli, 'k.', 'markersize', 20);
+% datetick; 
+% xlabel('Date'); 
+% ylabel('Perp Baseline (m)'); 
+% xlim([datenum('01012007', 'ddmmyyyy') datenum('01052011', 'ddmmyyyy')]); 
+% ylim([-6500 6500]);
 
 
 
@@ -195,17 +242,26 @@ ylim([-6500 6500]);
 
 %% Lat/lon 
 
-%close all
+close all
+load('WorldHiVectors.mat');
+lon = lon-360; 
 % states = shaperead('states', 'UseGeoCoords', true);
 % sn    = [2 9 12 23 25];
 states = shaperead('usastatehi', 'UseGeoCoords', true);
 sn     = [5 12 28 37 47];
-s = states([sn]);
+s      = states([sn]);
+nffi    = nff-min(nff); 
+nffi    = nffi/max(nffi);
+nffi   = ceil(nffi*length(nffi))+1; 
+cm     = parula(length(nffi)+1);
 
 figure; hold on; box on; 
 f=fill([-125.8 -125.8 -120.5 -120.5], [40 49.5 49.5 40], [0.85 0.9 0.95]);
 geoshow(s, 'DefaultFaceColor', [0.8 0.8 0.8], 'DefaultEdgeColor', [0.4 0.4 0.4]);
-plot(lall(:,2:2:end)', lall(:,1:2:end)', 'color', [0.0 0.0 0.0], 'linewidth', 1)
+for i = 1:length(lall)
+    plot(lall(i,2:2:end)', lall(i,1:2:end)', 'color', [cm(nffi(i),:)], 'linewidth', 1); 
+end
+plot(lon, lat, 'color', [0.4 0.4 0.4]); 
 axis equal
 axis([-125.8 -120.5 40 49.5]); 
 %set(gca, 'color', [0.85 0.9 0.95]);

@@ -108,25 +108,53 @@ end
 % save('Sentinel_all_params_d_bl.mat', 'd_bl'); 
 % save('Sentinel_all_params_gidx_all.mat', 'gidx_all'); 
 
-%%
-figure; hold on; 
-xlim([-200 200]); 
-for i=1:length(d_bl)
-    dbli = cell2mat(d_bl(i)); 
-    hist(dbli(:,2)); 
-    keyboard
-    oops
+%% fit 2 sentinel baselines
+% got the txt files by using vertex baseline tool, then copying and pasting
+% each 'page' of baselines into text doc. 
+
+close all
+f1  = 'p13f446_baselines.txt'; 
+fid = fopen(f1, 'rt');
+b   = textscan(fid, '%s'); 
+b   = b{1,1};
+fclose(fid); 
+
+b   = b(3:12:end); b1 = [];
+for i = 1:length(b); 
+    b1 = [b1; str2num(cell2mat(b(i)))]; 
+end
+        
+f1  = 'p35f123_baselines.txt'; 
+fid = fopen(f1, 'rt');
+b   = textscan(fid, '%s'); 
+b   = b{1,1}; 
+fclose(fid); 
+
+b   = b(3:12:end); b2 = [];
+for i = 1:length(b); 
+    b2 = [b2; str2num(cell2mat(b(i)))]; 
 end
 
-    
-
-
-
-
-
-
-
-
+figure('units', 'normalized', 'outerposition', [.1 .7 .3 .8]); hold on; 
+subplot(2,1,1); hold on; box on; 
+histfit(b1, 10, 'Normal'); 
+h1 = fitdist(b1,'Normal');
+ylabel('p13f446');
+% histogram(b1); 
+% ax = axis; 
+% x = -200:200; 
+% y = gaussmf(x, [60, 25]); 
+% plot(x,y*ax(4)*0.99, 'k'); 
+subplot(2,1,2); hold on; box on; 
+histfit(b2, 10, 'Normal'); 
+h2 = fitdist(b2,'Normal');
+ylabel('p35f123'); 
+% histogram(b2); 
+% ax = axis; 
+% x = -200:200; 
+% y = gaussmf(x, [55, -25]); 
+% plot(x,y*ax(4)*0.9, 'k'); 
+title('script at end of get_vertex_baselines_ sentinel.m'); 
 
 
 
