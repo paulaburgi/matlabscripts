@@ -1,4 +1,3 @@
-keyboard
 clear
 
 sr         = 9.48e5; 
@@ -12,7 +11,7 @@ bpr        = 70; %bp range
 true       = [0;dz]; %true model
 nw         = 0; 
 
-nintsi     = 15:5:155; %15:5:155;
+nintsi     = 15:5:115; %15:5:155;
 %nintsi     = 16:5:31;
 d          = [((1+nintsi)*12)/365]';
 smm        = [];
@@ -21,14 +20,7 @@ for k = 1:length(nintsi)
     nints     = nintsi(k); 
     Vavg_all  = [];
     
-    % noise constraint matrix
-    w         = 1e-4; 
-    du        = nints+1;
-    Gn        = circshift(eye(nints, du),-1) + eye(nints, du)*-1; 
-    Gn(end,1) = 0; Gn(end, end) = 1; 
-    Ga        = [eye(du).*w zeros(du, 2)];
-    
-    for j = 1:1000
+    for j = 1:500
 
       Bl0   = randn(nints+1,1)*bpr;
       Bl0   = diff(Bl0);
@@ -36,29 +28,24 @@ for k = 1:length(nintsi)
       G     = [ones(nints, 1)*dy*4*pi/l Bl];  %for vel term-  dimensional analysis:  radians/int = meters/year  * radians/meter  * years/int
       ints  = G*true;
       noise = diff(randn(nints+1,1)*nw);
-      
-      % Augment noise constraint matrix
-      Gz        = [Gn G];
-      Gnz       = [Gz; Ga];
 
         for i = 1:nints 
             use            = [1:i-1 i+1:nints];
-            %Gi             = G(use,:);
-            Gi             = Gnz([use  nints+1:length(Gnz)],:);
-            Giz            = Gz(use,:); 
+            Gi             = G(use,:);
             intsi          = ints;
             intsi(i+1:end) = 0;
             intsi          = intsi(use) + noise(use);
 
 
-            Ginv          = inv(Gi'*Gi)*Giz'; 
+            Ginv          = inv(Gi'*Gi)*Gi'; 
             m             = Ginv*intsi; 
-            Vavg_all(i,j) = m(end-1)*100;  
+            Vavg_all(i,j) = m(1)*100;  
             %Havg_all(i,j) = m(2);
         end
     end
     s     = [std(Vavg_all(2:end-1, :)')']; 
-    smm  = [smm; max(s)]; 
+    smm  = [smm; min(s) max(s)]; 
+    %smn = [smn; mean(s)];
     disp(num2str(k)); 
 end
 
@@ -70,14 +57,14 @@ end
 % keyboard; 
 
 %% Plot
-%close all
-h = figure('units', 'normalized', 'outerposition', [.1 .3 .4 .66]); %hold on; box on; 
+% close all
+%h = figure('units', 'normalized', 'outerposition', [.1 .3 .4 .66]); %hold on; box on; 
 
 line(d, smm(:,1), 'color', 'r'); 
-%line(d, smm(:,2), 'color', 'b'); 
+line(d, smm(:,2), 'color', 'b'); 
 
 xlim([0 5.4]);
-ylim([0 0.57]);
+ylim([0 0.92]);
 xlabel('Duration of Time Series (years)');
 ax1 = gca; 
 set(gca, 'FontName', 'Arial', 'fontsize', 13);
@@ -93,7 +80,7 @@ d2 = nintsi;
 
 ax1.YTickLabel = ''; 
 xlim([0 163])
-ylim([0 0.57]);
+ylim([0 0.92]);
 xlabel('Number of Interferograms');
 ylabel('Inferred Average Velocity (cm/year)'); 
 set(gca, 'FontName', 'Arial', 'fontsize', 13);

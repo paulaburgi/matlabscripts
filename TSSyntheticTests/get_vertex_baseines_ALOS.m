@@ -202,39 +202,39 @@ end
 
 %% plot for andes seminar
 
-% close all; 
-% 
-% figure; hold on; box on; 
-% plot([datenum('01012006', 'ddmmyyyy') datenum('01052012', 'ddmmyyyy')], [0 0], 'k--'); 
-% 
-% 
-% for i =1:length(d_bl)
-%     dbli = cell2mat(d_bl(i)); 
-%     gidx = cell2mat(gidx_all(i)); 
-%     dni  = dbli(:,1); 
-%     dni  = dni(gidx); 
-%     bli  = dbli(:,2); 
-%     bli  = bli(gidx); 
-%     for j = 1:length(bli)
-%         plot(dni(j,:), bli(j,:), 'color', [0.7 0.7 0.7]); %, cmap(i,:)); 
-%     end
-%     plot(dni, bli, '.', 'markersize', 10, 'color', [0.7 0.7 0.7]); %, cmap(i,:));
-% end
-% dbli = cell2mat(d_bl(57)); 
-% gidx = cell2mat(gidx_all(57)); 
-% dni  = dbli(:,1); 
-% dni  = dni(gidx); 
-% bli  = dbli(:,2); 
-% bli  = bli(gidx); 
-% for j = 1:length(bli)
-%     plot(dni(j,:), bli(j,:), 'k', 'linewidth', 2); 
-% end
-% plot(dni, bli, 'k.', 'markersize', 20);
-% datetick; 
-% xlabel('Date'); 
-% ylabel('Perp Baseline (m)'); 
-% xlim([datenum('01012007', 'ddmmyyyy') datenum('01052011', 'ddmmyyyy')]); 
-% ylim([-6500 6500]);
+close all; 
+
+figure; hold on; box on; 
+plot([datenum('01012006', 'ddmmyyyy') datenum('01052012', 'ddmmyyyy')], [0 0], 'k--'); 
+
+
+for i =1:length(d_bl)
+    dbli = cell2mat(d_bl(i)); 
+    gidx = cell2mat(gidx_all(i)); 
+    dni  = dbli(:,1); 
+    dni  = dni(gidx); 
+    bli  = dbli(:,2); 
+    bli  = bli(gidx); 
+    for j = 1:length(bli)
+        plot(dni(j,:), bli(j,:), 'color', [0.7 0.7 0.7]); %, cmap(i,:)); 
+    end
+    plot(dni, bli, '.', 'markersize', 10, 'color', [0.7 0.7 0.7]); %, cmap(i,:));
+end
+dbli = cell2mat(d_bl(57)); 
+gidx = cell2mat(gidx_all(57)); 
+dni  = dbli(:,1); 
+dni  = dni(gidx); 
+bli  = dbli(:,2); 
+bli  = bli(gidx); 
+for j = 1:length(bli)
+    plot(dni(j,:), bli(j,:), 'k', 'linewidth', 2); 
+end
+plot(dni, bli, 'k.', 'markersize', 20);
+datetick; 
+xlabel('Date'); 
+ylabel('Perp Baseline (m)'); 
+xlim([datenum('01012007', 'ddmmyyyy') datenum('01052011', 'ddmmyyyy')]); 
+ylim([-6500 6500]);
 
 
 

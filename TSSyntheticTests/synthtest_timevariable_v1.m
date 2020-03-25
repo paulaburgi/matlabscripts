@@ -38,19 +38,10 @@ smoo(end,:) = [-1 zeros(1,size(smoo,1)-3) -1 2];
 smoo = smoo*-1; 
 
 allm      = {};
-lambdai   = [1.4, 5]; %1e-5;% 1.4; 4;
+lambdai   = [1.4,5]; %1e-5;% 1.4; 4;
 % lambdai   = logspace(-5,2, 20); 
 ttt = 0; 
 ddd = length(lambdai)*n; 
-
-% noise constraint matrix
-w         = 1e-1; 
-du        = n+1;
-Gn        = circshift(eye(n, du),-1) + eye(n, du)*-1; 
-Gn(end,1) = 0; Gn(end, end) = 1; 
-%Ga        = [eye(du).*w zeros(du, n+1)];
-
-
 
 for k=1:length(lambdai)
 for i=1:n                    % Loop over clearing times
@@ -60,34 +51,26 @@ for i=1:n                    % Loop over clearing times
         Gt             = [Gdt(use,:) bps(use,j)]; % Time-variable
         Gtc            = Gt;                      % Greens function for clearing
         Gtc(use>i,end) = 0;                       % Dates after clearing at ti have zero dem error
-        tru           = [Gdt bps(:,j)]*ft; 
-    
+            
         % Allow variable velocity
         lambda         = lambdai(k); 
-        Ga             = [eye(du).*w lambda*[smoo; zeros(1,n)] zeros(du, 1)];
         L              = [smoo zeros(size(smoo,1),1)]; 
-        %Gtr            = [Gt;lambda*L];    % Regularize
-        Gt2            = [Gn(use,:) Gt];
-        Gtr            = [Gt2; Ga];
-        Gg2            = inv(Gtr'*Gtr)*Gt2';
-        %Gtc2           = [Gn(use,:) Gtc]; 
-        %R2             = Gg2*Gtc2;
+        Gtr            = [Gt;lambda*L];    % Regularize
+        Gg2            = inv(Gtr'*Gtr)*Gt';
+        R2             = Gg2*Gtc;
         
-        
-        %m              = R2*ft;
-        m              = Gg2*tru(use); 
-        m(du+1:end-1)
-        allm2(i,j,:)   = m(du+1:end-1);
-        %d              = Gtc2*ft; 
-        %rn(i,j)        = norm((Gt*m - d)); % Residual norm
-        %mn(i,j)        = norm(L*m);        % Model norm
+        m              = R2*ft;
+        allm2(i,j,:)   = m(1:end-1);
+        d              = Gtc*ft; 
+        rn(i,j)        = norm((Gt*m - d)); % Residual norm
+        mn(i,j)        = norm(L*m);        % Model norm
     end
     ttt = ttt + 1; 
     nnn = datestr(now); 
-    %disp([num2str(ttt) '/' num2str(ddd) ', ' nnn(13:end)]); 
+    disp([num2str(ttt) '/' num2str(ddd) ', ' nnn(13:end)]); 
 end
-    %rna(k) = mean(mean(rn));
-    %mna(k) = mean(mean(mn)); 
+    rna(k) = mean(mean(rn));
+    mna(k) = mean(mean(mn)); 
     allm   = [allm; allm2];
     % disp(num2str(k)); 
 end
@@ -133,7 +116,8 @@ for i=1:length(is)
     fill([(tp); flipud(tp)], [(m2mean(1:n)+m2std(1:n)),fliplr(m2mean(1:n)-m2std(1:n))], cc(1,:), 'edgecolor', 'none', 'LineStyle', '-', 'FaceAlpha', 0.2);
     fill([(tp); flipud(tp)], [(m2mean2(1:n)+m2std2(1:n)),fliplr(m2mean2(1:n)-m2std2(1:n))], cc(4,:), 'edgecolor', 'none', 'LineStyle', '-', 'FaceAlpha', 0.2);
     xlim([ts(1)-12 ts(end)+12]); 
-    %ylim([-23 23]);
+    %ylim([ax(3) ax(4)]);
+    ylim([-23 23]);
     if i == 1
         ax=axis;
         %title(['lambda: ' num2str(lambda)]); 
@@ -147,7 +131,7 @@ for i=1:length(is)
         set(gca, 'XTicklabel', []); 
     end
     
-    %*** yticks([-15 0 15]); 
+    yticks([-15 0 15]); 
     %text(335, 19, lg(i), 'fontsize', 15, 'fontname', 'arial'); 
     
     grid on; 

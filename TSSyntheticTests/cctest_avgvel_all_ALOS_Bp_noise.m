@@ -40,7 +40,7 @@ for q = 1:ncombos
     du          = sort(unique(dc_orig(:)), 'ascend'); 
     nvels       = length(du)-1;
     vel         = 0; 
-    dz          = 30; 
+    dz          = 20; 
     ccdates     = du+1;
     nccdates    = length(ccdates); 
     mb          = [];
@@ -85,6 +85,22 @@ for q = 1:ncombos
             blg    = (4*pi*bl)./(l*sr*sind(los));  
             %blg    = (4*pi*bl)./(l*sr*sind(los)); 
             Gbl    = [G blg];
+            
+        % *do inversion for noise parameters too*
+        t1       = dc(:,1);
+        t2       = dc(:,2);
+        [~,idx1] = ismember(t1,du);
+        [~,idx2] = ismember(t2,du);
+        G        = zeros(length(bl),length(du));
+        for k = 1:length(bl)
+            G(k,idx1(k)) = -1;
+            G(k,idx2(k)) = 1;
+        end
+        w       = 1e-4; 
+        Ga      = [eye(length(du)).*w zeros(length(du), 2)];
+        Gnz     = [G (dc(:,2) - dc(:,1)) * ((4*pi)./l) *(1./365)]; 
+        Gz      = [Gnz (4.*pi.*(bl))./(l.*sr.*sind(los))]; 
+        Gzd     = [Gz; Ga]; 
 
         % define time steps and "real" deformation
         def  = Gbl(1:end,1:end-1)*vel; 
@@ -101,18 +117,18 @@ for q = 1:ncombos
         intsiz2 = intsr; % + n;
         intsiz2(find(aftint == 1)) = intsiz2(find(aftint == 1)) + iz2(find(aftint == 1)); 
 
-        mest     = inv(Gbl'*Gbl)*Gbl'*intsiz; 
-        mb       = [mb; mest(2)]; 
-        mv       = [mv; mest(1)]; 
-        mest2     = inv(Gbl'*Gbl)*Gbl'*intsiz2; 
-        mb2       = [mb2; mest2(2)]; 
-        mv2       = [mv2; mest2(1)]; 
+        mest     = inv(Gzd'*Gzd)*Gz'*intsiz; 
+        mb       = [mb; mest(end)]; 
+        mv       = [mv; mest(end-1)]; 
+%         mest2     = inv(Gbl'*Gbl)*Gbl'*intsiz2; 
+%         mb2       = [mb2; mest2(2)]; 
+%         mv2       = [mv2; mest2(1)]; 
     end
     mb_all = [mb_all; mb]; 
     mv_all = [mv_all; mv];
     md_all = [md_all; du]; 
-    mb_all2 = [mb_all2; mb2]; 
-    mv_all2 = [mv_all2; mv2];
+%     mb_all2 = [mb_all2; mb2]; 
+%     mv_all2 = [mv_all2; mv2];
     
     
     if find(q == 1:10:ncombos)
@@ -150,7 +166,7 @@ plot(cell2mat(md_all(57)), cell2mat(mv_all(57))*-100, 'k', 'linewidth', 2);
 ylabel('Inferred Avg Velocity (cm/yr)'); 
 xlim([datenum('2006-09-01') datenum('2011-09-01')]); 
 set(gca, 'FontName', 'Arial', 'fontsize', 12, 'xticklabel', '')
-ylim([-8 14])
+ylim([-15 29])
 
 subplot('position', [0.1 0.1 0.8 0.4]); 
 plot(cell2mat(md_all(57)), cell2mat(mb_all(57)), 'k', 'linewidth', 2); 
@@ -159,7 +175,7 @@ ylabel('DEM Error (m)');
 datetick; 
 xlim([datenum('2006-09-01') datenum('2011-09-01')]); 
 set(gca, 'FontName', 'Arial', 'fontsize', 12)
-ylim([-6 48])
+ylim([-18 70])
 
 
 ud  = unique(dia); 
